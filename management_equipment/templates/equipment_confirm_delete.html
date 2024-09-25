@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block main %}
+<div class="container mx-auto py-6">
+    <h1 class="text-2xl font-bold mb-6">Confirm Delete</h1>
+    <p>Are you sure you want to delete the equipment: <strong>{{ object.name }}</strong>?</p>
+
+    <form method="post">
+        {% csrf_token %}
+        <div class="mt-4 flex justify-between">
+            <a href="{% url 'Manageq:View' %}" class="bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600">Cancel</a>
+            <button type="submit" class="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600">Delete</button>
+        </div>
+    </form>
+</div>
+{% endblock %}

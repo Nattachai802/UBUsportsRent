@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1 class="text-2xl font-bold mb-4">Booking History</h1>
+
+{% if bookings %}
+    <table class="min-w-full bg-white">
+        <thead>
+            <tr>
+                <th class="py-2">Equipment</th>
+                <th class="py-2">Booking Date</th>
+                <th class="py-2">Return Date</th>
+                <th class="py-2">Amount</th>
+                <th class="py-2">Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for booking in bookings %}
+            <tr>
+                <td class="py-2">{{ booking.equipment.name }}</td>
+                <td class="py-2">{{ booking.booking_date }}</td>
+                <td class="py-2">{{ booking.return_date }}</td>
+                <td class="py-2">{{ booking.amount }}</td>
+                <td class="py-2">
+                    {% if booking.return_date %}
+                    Returned
+                    {% else %}
+                    Ongoing
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <!-- Pagination links -->
+    <div class="mt-4">
+        {% if is_paginated %}
+            <div class="pagination">
+                <span class="step-links">
+                    {% if page_obj.has_previous %}
+                        <a href="?page=1">&laquo; first</a>
+                        <a href="?page={{ page_obj.previous_page_number }}">previous</a>
+                    {% endif %}
+
+                    <span class="current">
+                        Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
+                    </span>
+
+                    {% if page_obj.has_next %}
+                        <a href="?page={{ page_obj.next_page_number }}">next</a>
+                        <a href="?page={{ page_obj.paginator.num_pages }}">last &raquo;</a>
+                    {% endif %}
+                </span>
+            </div>
+        {% endif %}
+    </div>
+
+{% else %}
+    <p>You have no bookings in your history.</p>
+{% endif %}
+{% endblock %}

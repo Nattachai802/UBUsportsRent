@@ -1,0 +1,118 @@
+{% extends "base.html" %}
+
+{% block main %}
+
+
+<div class="min-h-screen bg-gray-100 py-6 flex flex-col justify-center sm:py-12">
+    <div class="relative py-3 sm:max-w-xl sm:mx-auto ">
+      <div
+        class="absolute inset-0 bg-gradient-to-r from-cyan-400 to-sky-500 shadow-lg transform -skew-y-6 sm:skew-y-0 sm:-rotate-6 sm:rounded-3xl">
+      </div>
+      <div class="relative px-10 py-12 bg-white shadow-lg sm:rounded-3xl sm:p-20">
+        <div class="max-w-md mx-auto" x-data="{ email: '', username: '', contact_number: '', first_name: '', last_name: '', password1: '', password2: '' }">
+          <div class="text-center">
+            <h1 class="text-3xl font-bold mb-4 text-gray-800">Register</h1>
+            <p class="text-sm text-gray-600" >ระบบเช่ายืมอุปกรณ์กีฬา</p>
+            <p class="text-sm text-gray-600">Create your account</p>
+          </div>
+          <div class="divide-y divide-gray-200">
+            <div class="py-8 text-base leading-6 space-y-4 text-gray-700 sm:text-lg sm:leading-7">
+            <form method="post">
+            {% csrf_token %}
+            <div class="relative mb-4">
+              <label for="email" class="block text-sm font-medium text-gray-700">Email</label>
+              <input type="email" id="email" name="email" x-model="email" class="input input-bordered w-full rounded-lg mt-1 border-gray-300 focus:ring-cyan-500 focus:border-cyan-500" placeholder='Enter Email'>
+              {% if form.email.errors %}
+                  <p class="text-red-500 text-xs font-light mt-1">* {{ form.email.errors.as_text }} *</p>
+              {% endif %}
+            </div>
+
+            <div class="flex space-x-4">
+                <div class="w-1/2">
+                  <label for="username" class="block text-sm font-medium text-gray-700">Username</label>
+                  <input type="text" id="username" name="username" x-model='username' class="input input-bordered w-full rounded-lg mt-1 border-gray-300 focus:ring-cyan-500 focus:border-cyan-500" placeholder='Enter Username'>
+                  {% if form.username.errors %}
+                      <p class="text-red-500 text-xs font-light mt-1">* {{ form.username.errors.as_text }} *</p>
+                  {% endif %}
+                </div>
+                <div class="w-1/2">
+                  <label for="contact_number" class="block text-sm font-medium text-gray-700">Contact Number</label>
+                  <input type="text" id="contact_number" name="contact_number" x-model='contact_number' class="input input-bordered w-full rounded-lg mt-1 border-gray-300 focus:ring-cyan-500 focus:border-cyan-500" placeholder='Enter number'>
+                  {% if form.contact_number.errors %}
+                      <p class="text-red-500 text-xs font-light mt-1">* {{ form.contact_number.errors.as_text }} *</p>
+                  {% endif %}
+                </div>
+            </div>
+
+            <div class="flex space-x-4 mt-4">
+                <div class="w-1/2">
+                  <label for="first_name" class="block text-sm font-medium text-gray-700">First Name</label>
+                  <input type="text" id="first_name" name="first_name" x-model='first_name' class="input input-bordered w-full rounded-lg mt-1 border-gray-300 focus:ring-cyan-500 focus:border-cyan-500" placeholder='Enter First name'>
+                  {% if form.first_name.errors %}
+                      <p class="text-red-500 text-xs font-light mt-1">* {{ form.first_name.errors.as_text }} *</p>
+                  {% endif %}
+                </div>
+                <div class="w-1/2">
+                  <label for="last_name" class="block text-sm font-medium text-gray-700">Last Name</label>
+                  <input type="text" id="last_name" name="last_name" x-model = 'last_name' class="input input-bordered w-full rounded-lg mt-1 border-gray-300 focus:ring-cyan-500 focus:border-cyan-500" placeholder='Enter Last name'>
+                  {% if form.last_name.errors %}
+                      <p class="text-red-500 text-xs font-light mt-1">* {{ form.last_name.errors.as_text }} *</p>
+                  {% endif %}
+                </div>
+            </div>
+
+            <div class="relative mt-4">
+                <label for="password1" class="block text-sm font-medium text-gray-700">Password</label>
+                <input type="password" id="password1" name="password1" x-model='password1' class="input input-bordered w-full rounded-lg mt-1 border-gray-300 focus:ring-cyan-500 focus:border-cyan-500" placeholder='Enter password'>
+                {% if form.password1.errors %}
+                    <p class="text-red-500 text-xs font-light mt-1">{{ form.password1.errors.as_text }}</p>
+                {% endif %}
+            </div>
+
+            <div class="relative mt-4">
+                <label for="password2" class="block text-sm font-medium text-gray-700">Confirm Password</label>
+                <input type="password" id="password2" name="password2" x-model='password2' class="input input-bordered w-full rounded-lg mt-1 border-gray-300 focus:ring-cyan-500 focus:border-cyan-500" placeholder='Enter password again'>
+                {% if form.password2.errors %}
+                    <p class="text-red-500 text-xs font-light mt-1">{{ form.password2.errors.as_text }}</p>
+                {% endif %}
+            </div>
+
+            <div class="relative mt-6">
+                <button class="w-full py-3 bg-cyan-500 text-white font-semibold rounded-lg shadow-md hover:bg-cyan-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-cyan-500"  x-show="email && username && contact_number && first_name && last_name && password1 && password2"
+                x-bind:disabled="!email || !username || !contact_number || !first_name || !last_name || !password1 || !password2">Submit</button>
+            </div>
+            {% if messages %}
+            <div id="messageModal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-9999">
+                <div class="bg-white rounded-lg p-6 shadow-lg ">
+                    <h2 class="text-2xl font-bold mb-4">Notification</h2>
+                    <p class="mb-4 text-gray-700 font-extrabold">
+                        {% for message in messages %}
+                            {{ message }}
+                        {% endfor %}
+                    </p>
+                    <button class="mt-4 bg-cyan-500 text-white px-4 py-2 rounded-lg shadow hover:bg-cyan-600" id="closeModal">Close</button>
+                </div>
+            </div>
+            <script>
+                // Auto-close modal after 3 seconds
+                setTimeout(function() {
+                    document.getElementById('messageModal').style.display = 'none';
+                    window.location.href = "{% url 'base:Login' %}";
+                }, 3000);
+            
+                // Close modal on button click
+                document.getElementById('closeModal').addEventListener('click', function() {
+                    document.getElementById('messageModal').style.display = 'none';
+                });
+            </script>
+            {% endif %}
+
+            </form>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+{% endblock %}
