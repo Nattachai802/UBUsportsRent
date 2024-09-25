@@ -12,16 +12,7 @@
         <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
     </head>
     <body>
-        <nav>
-            <ul>
-                <!-- Other menu items... -->
-                {% if user.is_authenticated %}
-                    <li><a href="{% url 'base:logout' %}" class="text-red-500 hover:text-red-600">Logout</a></li>
-                {% else %}
-                    <li><a href="{% url 'base:Login' %}">Login</a></li>
-                {% endif %}
-            </ul>
-        </nav>
+
         {% block main %}
         
         {% endblock  %}
