@@ -15,12 +15,28 @@
                 <input type="text" name="name" id="name" value="{{ form.name.value }}" 
                 class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-cyan-500 focus:border-cyan-500" placeholder="Enter equipment name">
             </div>
-
-            <div>
+            <div x-data="{ selectedCategory: '' }">
                 <label for="type" class="block text-sm font-medium text-gray-700">Category</label>
-                <input type="text" name="type" id="type" value="{{ form.type.value }}" 
-                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-cyan-500 focus:border-cyan-500" placeholder="Enter equipment category">
+                <select name="type" id="type" x-model="selectedCategory" 
+                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-cyan-500 focus:border-cyan-500">
+                    <option value="">Select Category</option>
+                    <option value="อุปกรณ์กีฬากลางแจ้ง">อุปกรณ์กีฬากลางแจ้ง</option>
+                    <option value="อุปกรณ์กีฬาภายในอาคาร">อุปกรณ์กีฬาภายในอาคาร</option>
+                    <option value="อุปกรณ์กีฬาทางน้ำ">อุปกรณ์กีฬาทางน้ำ</option>
+                    <option value="อุปกรณ์กีฬาฤดูหนาว">อุปกรณ์กีฬาฤดูหนาว</option>
+                    <option value="อุปกรณ์กีฬาประเภททีม">อุปกรณ์กีฬาประเภททีม</option>
+                    <option value="อุปกรณ์กีฬาประเภทเดี่ยว">อุปกรณ์กีฬาประเภทเดี่ยว</option>
+                    <option value="อุปกรณ์เสริมความฟิต">อุปกรณ์เสริมความฟิต</option>
+                    <option value="อุปกรณ์กีฬาผจญภัย">อุปกรณ์กีฬาผจญภัย</option>
+                    <option value="อุปกรณ์กีฬาประเภทต่อสู้">อุปกรณ์กีฬาประเภทต่อสู้</option>
+                    <option value="อุปกรณ์กีฬาความเร็ว">อุปกรณ์กีฬาความเร็ว</option>
+                </select>
+            
+                <div class="mt-4 text-gray-600" x-show="selectedCategory">
+                    Selected Category: <span class="font-bold" x-text="selectedCategory"></span>
+                </div>
             </div>
+            
 
             <div>
                 <label for="available_amount" class="block text-sm font-medium text-gray-700">Quantity</label>
@@ -28,12 +44,16 @@
                 class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-cyan-500 focus:border-cyan-500" placeholder="Enter quantity available">
             </div>
 
-            <div>
-                <label for="picture_url" class="block text-sm font-medium text-gray-700">Image URL</label>
-                <input type="text" name="picture_url" id="picture_url" value="{{ form.picture_url.value }}" 
-                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-cyan-500 focus:border-cyan-500" placeholder="Enter image URL">
+            <div x-data="{ fileName: '' }" class="relative">
+                <label for="picture" class="block text-sm font-medium text-gray-700">Upload Image</label>
+            
+                <div class="mt-1 flex items-center">
+                    <!-- Hidden input field for file upload -->
+                    <input type="file" name="picture" id="picture" class="hidden" @change="fileName = $event.target.files[0].name">
+                    <!-- Display selected file name -->
+                    <span class="ml-4 text-gray-500" x-text="fileName || 'No file selected'"></span>
+                </div>
             </div>
-        </div>
 
         <div class="mt-6 flex justify-end space-x-4">
             <a href="{% url 'Manageq:View' %}" class="inline-flex justify-center rounded-md border border-transparent bg-gray-500 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-400">
