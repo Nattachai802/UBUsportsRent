@@ -1,9 +1,22 @@
-{% if notifications %}
-    <ul>
-        {% for notification in notifications %}
-            <li>{{ notification.message }} - {{ notification.created_at }}</li>
-        {% endfor %}
-    </ul>
-{% else %}
-    <p>No new notifications</p>
-{% endif %}
+{% extends "base.html" %}
+
+{% block main %}
+<section class="container mx-auto py-6 px-4 sm:px-6 lg:px-8">
+    <h1 class="text-2xl font-bold mb-6 text-cyan-600">Notifications ({{ unread_count }})</h1>
+
+    {% if notifications %}
+        <ul class="space-y-4">
+            {% for notification in notifications %}
+            <li class="bg-white p-4 shadow-md rounded-lg">
+                <p class="text-gray-700">{{ notification.message }}</p>
+                <p class="text-gray-500 text-sm">Received on: {{ notification.created_at|date:"M d, Y h:i A" }}</p>
+            </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p class="text-gray-500">No new notifications</p>
+    {% endif %}
+</section>
+
+
+{% endblock %}

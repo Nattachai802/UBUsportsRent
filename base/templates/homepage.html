@@ -15,7 +15,7 @@
                 </li>
                 <li>
                     <a href="{% url 'base:notification_list' %}" class="bg-white text-cyan-600 font-semibold py-2 px-4 rounded-lg hover:bg-cyan-500 hover:text-white transition duration-300">
-                        Notifications ({{ unread_count }})
+                        Notifications 
                     </a>
                 </li>
                 <li>
@@ -28,6 +28,11 @@
                     {% else %}
                         <a href="{% url 'base:Login' %}" class="bg-green-500 text-white font-semibold py-2 px-4 rounded-lg hover:bg-green-600 transition duration-300">Login</a>
                     {% endif %}
+                </li>
+                <li>
+                    <a href="{% url 'base:account_dashboard' %}">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="35" height="35" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-circle-user"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="10" r="3"/><path d="M7 20.662V19a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v1.662"/></svg>
+                    </a>
                 </li>
                 <!-- Welcome Message -->
 

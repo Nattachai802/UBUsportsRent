@@ -14,9 +14,15 @@
                 <p class="text-gray-600">{{ equipment.type }}</p>
                 <p class="text-gray-600">Available: {{ equipment.available_amount }}</p>
 
-                <a href="{% url 'renting:booking' equipment.id %}" class="block mt-4 bg-cyan-500 text-white text-center py-2 px-4 rounded hover:bg-cyan-600 transition duration-300">
-                    Rent Now
-                </a>
+                <div x-data="{ availableAmount: {{ equipment.available_amount }} }">
+                    <a href="{% url 'renting:booking' equipment.id %}" 
+                       class="block mt-4 bg-cyan-500 text-white text-center py-2 px-4 rounded hover:bg-cyan-600 transition duration-300"
+                       :class="{ 'opacity-50 cursor-not-allowed bg-gray-500 hover:bg-gray-700 transition duration-300': availableAmount === 0 }"
+                       @click.prevent="availableAmount === 0 ? false : window.location = $event.target.href">
+                       Rent Now
+                    </a>
+                    <p x-show="availableAmount === 0" class="text-red-500 mt-2">Not available for rent.</p>
+                </div>
             </div>
         </div>
         {% endfor %}

@@ -42,7 +42,7 @@ class EquipmentCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView,Su
 #CRUD - Update
 class EquipmentUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView,SuccessMessageMixin):
     model = Equipment
-    fields = ['name', 'type', 'available_amount', 'picture_url']
+    fields = ['name', 'type', 'available_amount', 'picture']
     template_name = 'equipment_form.html'
     success_url = reverse_lazy('Manageq:View')
     success_message = "Equipment successfully updated."

@@ -99,7 +99,7 @@ class AccountView(LoginRequiredMixin,TemplateView):
         context['user'] = user
 
         # Fetch current rentals (items not yet returned)
-        context['current_rentals'] = Booking.objects.filter(user=user, status='Rented')
+        context['current_rentals'] = Booking.objects.filter(user=user, status='approved')
 
         # Fetch rental history (items returned)
         context['rental_history'] = Booking.objects.filter(user=user, status='Returned')

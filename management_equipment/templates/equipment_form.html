@@ -49,7 +49,7 @@
             
                 <div class="mt-1 flex items-center">
                     <!-- Hidden input field for file upload -->
-                    <input type="file" name="picture" id="picture" class="hidden" @change="fileName = $event.target.files[0].name">
+                    <input type="file" name="picture" id="picture"  @change="fileName = $event.target.files[0].name">
                     <!-- Display selected file name -->
                     <span class="ml-4 text-gray-500" x-text="fileName || 'No file selected'"></span>
                 </div>
