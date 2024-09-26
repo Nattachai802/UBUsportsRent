@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block main %}
+<h1 class="text-2xl font-bold mb-6">Approve or Reject Bookings</h1>
+
+<table class="table-auto w-full">
+    <thead>
+        <tr class="bg-gray-100">
+            <th class="px-4 py-2">#</th>
+            <th class="px-4 py-2">User</th>
+            <th class="px-4 py-2">Equipment</th>
+            <th class="px-4 py-2">Booking Date</th>
+            <th class="px-4 py-2">Return Date</th>
+            <th class="px-4 py-2">Status</th>
+            <th class="px-4 py-2">Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for booking in bookings %}
+        <tr>
+            <td class="border px-4 py-2">{{ forloop.counter }}</td>
+            <td class="border px-4 py-2">{{ booking.user.username }}</td>
+            <td class="border px-4 py-2">{{ booking.equipment.name }}</td>
+            <td class="border px-4 py-2">{{ booking.booking_date }}</td>
+            <td class="border px-4 py-2">{{ booking.return_date }}</td>
+            <td class="border px-4 py-2">{{ booking.get_status_display }}</td>
+            <td class="border px-4 py-2">
+                {% if booking.status == 'Pending' %}
+                <form method="post" action="{% url 'base:booking_approval' %}" class="inline">
+                    {% csrf_token %}
+                    <input type="hidden" name="booking_id" value="{{ booking.id }}">
+                    <button type="submit" name="action" value="approve" class="bg-green-500 text-white px-4 py-2 rounded-lg shadow hover:bg-green-600 transition duration-300">
+                        Approve
+                    </button>
+                    <button type="submit" name="action" value="reject" class="bg-red-500 text-white px-4 py-2 rounded-lg shadow hover:bg-red-600 transition duration-300">
+                        Reject
+                    </button>
+                </form>
+                {% else %}
+                <p>{{ booking.get_status_display }}</p>
+                {% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block main %}
+<div class="container mx-auto py-6">
+    <h1 class="text-2xl font-bold mb-6">Account Dashboard</h1>
+
+    <section>
+        <h2 class="text-lg font-semibold">User Information</h2>
+        <p><strong>Username:</strong> {{ user.username }}</p>
+        <p><strong>Email:</strong> {{ user.email }}</p>
+    </section>
+
+    <section class="mt-8">
+        <h2 class="text-lg font-semibold">Current Rentals</h2>
+        {% if current_rentals %}
+            <ul>
+                {% for rental in current_rentals %}
+                <li>{{ rental.equipment.name }} - Due on {{ rental.return_date }}</li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p>No current rentals.</p>
+        {% endif %}
+    </section>
+
+    <section class="mt-8">
+        <h2 class="text-lg font-semibold">Rental History</h2>
+        {% if rental_history %}
+            <ul>
+                {% for rental in rental_history %}
+                <li>{{ rental.equipment.name }} - Returned on {{ rental.return_date }}</li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p>No rental history.</p>
+        {% endif %}
+    </section>
+</div>
+{% endblock %}

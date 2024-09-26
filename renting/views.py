@@ -27,11 +27,26 @@ class BookingCreateView(LoginRequiredMixin, CreateView):
         return context
 
     def form_valid(self, form):
-        equipment = form.cleaned_data['equipment']
-        if equipment.available_amount <= 0:
-            form.add_error('equipment', 'อุปกรณ์นี้ไม่มีให้เช่าในขณะนี้')
+        # Get the equipment object
+        equipment = Equipment.objects.get(id=self.kwargs['equipment_id'])
+        requested_amount = form.cleaned_data['amount']
+        
+        # Check if there are enough items available
+        if equipment.available_amount < requested_amount:
+            form.add_error('amount', f'อุปกรณ์นี้มีเหลือเพียง {equipment.available_amount} หน่วยเท่านั้น')
             return self.form_invalid(form)
+        
+        # Update equipment available amount
+        equipment.available_amount -= requested_amount
+        equipment.save()
+        
+        # Set the user and equipment fields in the booking instance
         form.instance.user = self.request.user
+        form.instance.equipment = equipment
+        
+        # Set booking status to pending
+        form.instance.status = 'Pending' 
+        
         return super().form_valid(form)
 
 class ReturnEquipmentView(UpdateView):

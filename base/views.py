@@ -1,6 +1,7 @@
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView 
 from django.contrib.auth.views import LoginView , PasswordResetView
-from django.shortcuts import render , redirect
+from django.shortcuts import render , redirect , get_object_or_404
+from django.views.generic import TemplateView
 from django.urls import reverse_lazy
 from django.contrib import messages
 from django.contrib.messages.views import SuccessMessageMixin
@@ -87,3 +88,44 @@ class UserDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     
     def test_func(self):
         return self.request.user.is_superuser 
+
+class AccountView(LoginRequiredMixin,TemplateView):
+    template_name = 'dashborad.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # Fetch user information
+        user = self.request.user
+        context['user'] = user
+
+        # Fetch current rentals (items not yet returned)
+        context['current_rentals'] = Booking.objects.filter(user=user, status='Rented')
+
+        # Fetch rental history (items returned)
+        context['rental_history'] = Booking.objects.filter(user=user, status='Returned')
+
+        return context
+
+class BookingApprovalView(UserPassesTestMixin, ListView):
+    model = Booking
+    template_name = 'booking_approval_list.html'
+    context_object_name = 'bookings'
+
+    def test_func(self):
+        return self.request.user.is_superuser  # ให้เฉพาะแอดมินเท่านั้นที่สามารถเข้าถึงหน้านี้ได้
+
+    
+    def post(self, request, *args, **kwargs):
+        booking_id = request.POST.get('booking_id')
+        action = request.POST.get('action')  # รั บ action ว่าแอดมินเลือก approved หรือ rejected
+        booking = get_object_or_404(Booking, id=booking_id)
+
+        if action == 'approve':
+            booking.status = 'approved'
+            messages.success(request, f'Booking #{booking.id} ได้รับการอนุมัติแล้ว')
+        elif action == 'reject':
+            booking.status = 'rejected'
+            messages.warning(request, f'Booking #{booking.id} ถูกปฏิเสธ')
+
+        booking.save()
+        return redirect('base:booking_approval')
