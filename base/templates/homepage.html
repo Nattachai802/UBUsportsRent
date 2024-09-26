@@ -67,12 +67,12 @@
             <!-- Equipment Card Example -->
             {% for equipment in equipments %}
             <div class="bg-white shadow-lg rounded-lg p-6 hover:shadow-2xl transition duration-300">
-                <img src="{{ equipment.picture }}" alt="{{ equipment.name }}" class="w-full h-48 object-cover rounded-md mb-4">
+                <img src="{{ equipment.picture.url }}" alt="{{ equipment.name }}" class="w-full h-48 object-cover rounded-md mb-4">
                 <h4 class="text-xl font-semibold text-gray-800">{{ equipment.name }}</h4>
                 <p class="text-gray-600">{{ equipment.type }}</p>
                 <p class="mt-2 text-gray-500">Available: {{ equipment.available_amount }}</p>
                 <div class="mt-4">
-                    <a href="#" class="bg-cyan-500 text-white py-2 px-6 rounded-lg hover:bg-cyan-600 transition duration-200">Rent Now</a>
+                    <a href="{% url 'renting:booking' equipment.id %}" class="bg-cyan-500 text-white py-2 px-6 rounded-lg hover:bg-cyan-600 transition duration-200">Rent Now</a>
                 </div>
             </div>
             {% empty %}

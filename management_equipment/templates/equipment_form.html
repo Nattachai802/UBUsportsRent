@@ -6,7 +6,7 @@
 <div class="container mx-auto py-6 px-4 sm:px-6 lg:px-8">
     <h1 class="text-3xl font-semibold text-center mb-8 text-cyan-600">{% if object %}Update Equipment{% else %}Add Equipment{% endif %}</h1>
 
-    <form method="post" class="space-y-6">
+    <form method="post" class="space-y-6" enctype="multipart/form-data">
         {% csrf_token %}
         
         <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">

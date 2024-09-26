@@ -4,20 +4,27 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib import messages
 
 from django.views.generic import CreateView, ListView , UpdateView
-from base.models import Booking
+from base.models import Booking , Equipment
 from .forms import BookingForm , ReturnForm
 
 
 class EquipmentListView(LoginRequiredMixin, ListView):
-    model = Booking
+    model = Equipment
     template_name = 'renting/equipment_list.html'
     context_object_name = 'equipments'
+
+
 
 class BookingCreateView(LoginRequiredMixin, CreateView):
     model = Booking
     form_class = BookingForm
     template_name = 'renting/booking_form.html'
     success_url = reverse_lazy('renting:equipment_list')
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['equipment'] = Equipment.objects.get(id=self.kwargs['equipment_id'])
+        return context
 
     def form_valid(self, form):
         equipment = form.cleaned_data['equipment']

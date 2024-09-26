@@ -30,6 +30,9 @@ class EquipmentCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView,Su
     template_name = 'equipment_form.html'
     success_url = reverse_lazy('Manageq:View')
     success_message = "Equipment successfully created."
+    def form_valid(self, form):
+        form.instance.picture = self.request.FILES.get('picture') 
+        return super().form_valid(form)
 
     def test_func(self):
         if not self.request.user.is_superuser:

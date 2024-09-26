@@ -1,16 +1,58 @@
-{% extends  "base.html" %}
+{% extends "base.html" %}
 
 {% block main %}
-<h1 class="text-2xl font-bold mb-4">Available Equipment</h1>
-<ul>
-    {% for equipment in equipments %}
-    <li>
-        <h2 class="text-lg">{{ equipment.equipment.name }}</h2>
-        <p>Available Amount: {{ equipment.equipment.available_amount }}</p>
-        <a href="{% url 'renting:booking' %}?equipment={{ equipment.equipment.id }}" class="bg-blue-500 text-white px-4 py-2 rounded">Rent Now</a>
-    </li>
-    {% empty %}
-    <p>No equipment available for rent at this moment.</p>
-    {% endfor %}
-</ul>
+<div class="container mx-auto py-8">
+    <h1 class="text-2xl font-bold text-center mb-6">Booking Equipment</h1>
+
+    <form method="post" class="bg-white shadow-md rounded-lg p-6 space-y-6">
+        {% csrf_token %}
+        {{ form.non_field_errors }}
+
+        <!-- อุปกรณ์ที่เลือกแสดงเป็นข้อความ -->
+        <div>
+            <label class="block text-sm font-medium text-gray-700">Equipment</label>
+            <p class="font-semibold">{{ equipment.name }}</p>
+            <input type="hidden" name="equipment" value="{{ equipment.id }}">
+        </div>
+
+        <!-- วันที่จอง -->
+        <div>
+            <label for="booking_date" class="block text-sm font-medium text-gray-700">Booking Date</label>
+            {{ form.booking_date }}
+            {% if form.booking_date.errors %}
+                <p class="text-red-500 text-sm">{{ form.booking_date.errors }}</p>
+            {% endif %}
+        </div>
+
+        <!-- วันที่คืน -->
+        <div>
+            <label for="return_date" class="block text-sm font-medium text-gray-700">Return Date</label>
+            {{ form.return_date }}
+            {% if form.return_date.errors %}
+                <p class="text-red-500 text-sm">{{ form.return_date.errors }}</p>
+            {% endif %}
+        </div>
+
+        <!-- จำนวนอุปกรณ์ที่ต้องการจอง -->
+        <div>
+            <label for="amount" class="block text-sm font-medium text-gray-700">Amount</label>
+            {{ form.amount }}
+            {% if form.amount.errors %}
+                <p class="text-red-500 text-sm">{{ form.amount.errors }}</p>
+            {% endif %}
+            <small class="text-gray-500">{{ form.amount.help_text }}</small>
+        </div>
+
+        <!-- ปุ่ม Submit และ Cancel -->
+        <div class="mt-6 flex justify-end space-x-4">
+            <a href="{% url 'base:home' %}" class="inline-flex justify-center rounded-md border border-transparent bg-gray-500 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-400">
+                Cancel
+            </a>
+            <button type="submit" 
+                class="inline-flex justify-center rounded-md border border-transparent bg-cyan-500 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-cyan-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-cyan-400">
+                Submit Booking
+            </button>
+        </div>
+    </form>
+</div>
 {% endblock %}

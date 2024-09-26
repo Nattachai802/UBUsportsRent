@@ -7,7 +7,7 @@ app_name = 'renting'
 
 urlpatterns = [
     path('equipment/', EquipmentListView.as_view(), name='equipment_list'),
-    path('booking/', BookingCreateView.as_view(), name='booking'),
+    path('booking/<int:equipment_id>/', BookingCreateView.as_view(), name='booking'),
     path('return/<int:pk>/', ReturnEquipmentView.as_view(), name='return_equipment'),
     path('booking-history/', BookingHistoryView.as_view(), name='booking_history'),
 ]
