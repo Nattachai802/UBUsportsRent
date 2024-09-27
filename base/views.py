@@ -7,6 +7,7 @@ from django.contrib import messages
 from django.contrib.messages.views import SuccessMessageMixin
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.auth import get_user_model
+from django.http import JsonResponse
 
 from base.models import *
 from base.form import UserRegisterForms
@@ -140,3 +141,19 @@ class BookingApprovalView(UserPassesTestMixin, ListView):
 
         booking.save()
         return redirect('base:booking_approval')  # Redirect ไปยังหน้าการอนุมัติการจอง
+    
+
+#calendar
+def booking_events(request):
+    bookings = Booking.objects.filter(status='approved')  # แสดงเฉพาะการจองที่ได้รับการอนุมัติแล้ว
+    events = []
+
+    for booking in bookings:
+        events.append({
+            'title': booking.equipment.name,
+            'start': booking.booking_date,
+            'end': booking.return_date,
+            'color': '#378006'  # กำหนดสีให้ event
+        })
+
+    return JsonResponse(events, safe=False)

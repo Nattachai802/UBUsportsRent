@@ -81,8 +81,49 @@
     <section class="text-center mb-12">
         <h2 class="text-5xl font-bold text-cyan-800 mb-4">Welcome to UBU Sports Rent</h2>
         <p class="text-gray-700 mb-6 text-lg">Your one-stop platform for renting sports equipment at UBU. Register now and start renting today!</p>
-        <a href="{% url 'base:Register' %}" class="bg-cyan-500 text-white py-3 px-8 rounded-lg shadow-lg hover:bg-cyan-700 transition duration-300 transform hover:scale-105">Get Started</a>
     </section>
+    <div class="container grid grid-cols-1 md:grid-cols-2 gap-8">
+        <h1>Booking Calendar</h1>
+        <div id='calendar'></div>
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var calendarEl = document.getElementById('calendar');
+    
+            // สร้างปฏิทินด้วย FullCalendar
+            var calendar = new FullCalendar.Calendar(calendarEl, {
+                initialView: 'dayGridMonth', // มุมมองปฏิทินแบบเดือน
+                events: '/api/bookings/', // URL ดึงข้อมูลการจอง
+                eventColor: '#378006', // กำหนดสีของ event
+                eventTimeFormat: { hour: '2-digit', minute: '2-digit', hour12: false }, // รูปแบบเวลา 24 ชม.
+    
+                // เมื่อคลิกที่ event ในปฏิทิน (เชื่อมโยงกับการคืนอุปกรณ์)
+                eventClick: function(info) {
+                    if (confirm("คุณต้องการคืนอุปกรณ์นี้หรือไม่?")) {
+                        // เรียก API สำหรับคืนอุปกรณ์
+                        fetch(`/api/return/${info.event.id}/`, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRFToken': '{{ csrf_token }}' // Django CSRF Token
+                            }
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            alert('คืนอุปกรณ์เรียบร้อยแล้ว!');
+                            calendar.refetchEvents(); // อัปเดตปฏิทิน
+                        })
+                        .catch(error => {
+                            alert('เกิดข้อผิดพลาดในการคืนอุปกรณ์');
+                            console.error('Error:', error);
+                        });
+                    }
+                }
+            });
+    
+            calendar.render(); // แสดงปฏิทิน
+        });
+    </script>
 
     <!-- Featured Equipment Section -->
     <section class="mt-12">
