@@ -53,15 +53,27 @@ class ResetPasswordView(SuccessMessageMixin, PasswordResetView):
         return super().form_valid(form)
 
 # View สำหรับแสดงรายการแจ้งเตือน
-def notification_list_view(request):
-    if request.user.is_authenticated:
-        notifications = Notification.objects.filter(user=request.user, is_read=False)
-        unread_count = notifications.count()  # นับจำนวนการแจ้งเตือนที่ยังไม่ได้อ่าน
-        return render(request, 'notification_list.html', {'notifications': notifications, 'unread_count': unread_count})
-    else:
-        messages.error(request, 'กรุณาเข้าสู่ระบบก่อนเพื่อดูการแจ้งเตือน')
-        return redirect('base:Login')
+class NotificationListView(LoginRequiredMixin, ListView):
+    model = Notification
+    template_name = 'notification_list.html'
+    context_object_name = 'notifications'
+    
+    def get_queryset(self):
+        # ดึงเฉพาะการแจ้งเตือนที่ยังไม่ถูกอ่าน
+        return Notification.objects.filter(user=self.request.user).order_by('-created_at')
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # ส่งจำนวนการแจ้งเตือนที่ยังไม่ได้อ่านไปที่ template
+        context['unread_count'] = Notification.objects.filter(user=self.request.user, is_read=False).count()
+        return context
+
+def mark_as_read(request, notification_id):
+    notification = get_object_or_404(Notification, id=notification_id, user=request.user)
+    notification.is_read = True
+    notification.save()
+    messages.success(request, 'การแจ้งเตือนถูกทำเครื่องหมายว่าอ่านแล้ว')
+    return redirect('base:notification_list')
 #admin CRUD
 
 class UserListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
@@ -114,18 +126,17 @@ class BookingApprovalView(UserPassesTestMixin, ListView):
     def test_func(self):
         return self.request.user.is_superuser  # ให้เฉพาะแอดมินเท่านั้นที่สามารถเข้าถึงหน้านี้ได้
 
-    
     def post(self, request, *args, **kwargs):
         booking_id = request.POST.get('booking_id')
-        action = request.POST.get('action')  # รั บ action ว่าแอดมินเลือก approved หรือ rejected
+        action = request.POST.get('action')  # รับ action ว่าแอดมินเลือก approved หรือ declined
         booking = get_object_or_404(Booking, id=booking_id)
 
         if action == 'approve':
             booking.status = 'approved'
-            messages.success(request, f'Booking #{booking.id} ได้รับการอนุมัติแล้ว')
-        elif action == 'reject':
-            booking.status = 'rejected'
-            messages.warning(request, f'Booking #{booking.id} ถูกปฏิเสธ')
+            messages.success(request, f'Booking #{booking.id} has been approved.')
+        elif action == 'decline':
+            booking.status = 'declined'
+            messages.warning(request, f'Booking #{booking.id} has been declined.')
 
         booking.save()
-        return redirect('base:booking_approval')
+        return redirect('base:booking_approval')  # Redirect ไปยังหน้าการอนุมัติการจอง

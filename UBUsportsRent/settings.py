@@ -33,6 +33,7 @@ EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'sittofit.noreply@gmail.com'
 EMAIL_HOST_PASSWORD = 'euol leuv ijrq mjbz'
+DEFAULT_FROM_EMAIL = 'UBU Sports Rent <sittofit.noreply@gmail.com>'
 
 LOGIN_REDIRECT_URL = 'base:home'
 

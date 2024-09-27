@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block main %}
+<div class="container mx-auto py-6">
+    <h1 class="text-2xl font-bold mb-6">My Rentals</h1>
+
+    <section>
+        <h2 class="text-lg font-semibold">Current Rentals</h2>
+        {% if current_rentals %}
+            <ul class="space-y-4">
+                {% for rental in current_rentals %}
+                <li class="bg-white shadow-md rounded-lg p-4">
+                    <h3 class="text-lg font-semibold">{{ rental.equipment.name }}</h3>
+                    <p>Due on: {{ rental.return_date }}</p>
+                    <p>Amount rented: {{ rental.amount }}</p>
+                    <form method="POST" action="{% url 'renting:return_equipment' rental.id %}">
+                        {% csrf_token %}
+                        <button type="submit" class="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition duration-300">Return</button>
+                    </form>
+                </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p>No current rentals.</p>
+        {% endif %}
+    </section>
+
+    <section class="mt-8">
+        <h2 class="text-lg font-semibold">Rental History</h2>
+        {% if rental_history %}
+            <ul class="space-y-4">
+                {% for rental in rental_history %}
+                <li class="bg-white shadow-md rounded-lg p-4">
+                    <h3 class="text-lg font-semibold">{{ rental.equipment.name }}</h3>
+                    <p>Returned on: {{ rental.return_date }}</p>
+                    <p>Amount rented: {{ rental.amount }}</p>
+                </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p>No rental history.</p>
+        {% endif %}
+    </section>
+</div>
+{% endblock %}

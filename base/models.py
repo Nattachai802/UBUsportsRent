@@ -71,7 +71,7 @@ class Statistics(models.Model):
 class BookingHistory(models.Model):
     #id is primary key
     booking = models.ForeignKey(Booking, on_delete=models.CASCADE)
-    status = models.CharField(max_length=20, choices=[('Pending', 'Pending'), ('Approved', 'Approved'), ('Denied', 'Denied'), ('Cancelled', 'Cancelled')])
+    status = models.CharField(max_length=20, choices=[('Pending', 'Pending'), ('approved', 'approved'), ('denied', 'denied'), ('cancelled', 'cancelled')])
     changed_by = models.ForeignKey(Staff, on_delete=models.CASCADE)
     change_date = models.DateTimeField(auto_now_add=True)
 

@@ -1,22 +1,23 @@
-{% extends "base.html" %}
+{% extends 'base.html' %}
 
 {% block main %}
-<section class="container mx-auto py-6 px-4 sm:px-6 lg:px-8">
-    <h1 class="text-2xl font-bold mb-6 text-cyan-600">Notifications ({{ unread_count }})</h1>
+<div class="container mx-auto py-6">
+    <h1 class="text-2xl font-bold mb-6">Notifications</h1>
 
     {% if notifications %}
-        <ul class="space-y-4">
+        <ul class="bg-white shadow-md rounded-lg">
             {% for notification in notifications %}
-            <li class="bg-white p-4 shadow-md rounded-lg">
-                <p class="text-gray-700">{{ notification.message }}</p>
-                <p class="text-gray-500 text-sm">Received on: {{ notification.created_at|date:"M d, Y h:i A" }}</p>
+            <li class="border-b p-4">
+                <span>{{ notification.message }}</span>
+                <span class="text-sm text-gray-500"> - {{ notification.created_at|date:"F d, Y" }}</span>
+                {% if not notification.is_read %}
+                    <a href="{% url 'base:mark_as_read' notification.id %}" class="ml-4 text-blue-500">Mark as read</a>
+                {% endif %}
             </li>
             {% endfor %}
         </ul>
     {% else %}
-        <p class="text-gray-500">No new notifications</p>
+        <p>No new notifications</p>
     {% endif %}
-</section>
-
-
+</div>
 {% endblock %}

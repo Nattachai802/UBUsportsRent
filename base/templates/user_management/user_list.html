@@ -1,15 +1,32 @@
 {% extends 'base.html' %}
+
 {% block main %}
-<h2 class="text-2xl">User Management</h2>
-<ul>
-    {% for user in users %}
-        <li>
-            {{ user.username }} ({{ user.email }})
-            <a href="{% url 'base:user_edit' user.id %}" class="text-blue-500">Edit</a> |
-            <a href="{% url 'base:user_delete' user.id %}" class="text-red-500">Delete</a>
-        </li>
-    {% empty %}
-        <p>No users available.</p>
-    {% endfor %}
-</ul>
+<div class="container mx-auto py-6 px-4 sm:px-6 lg:px-8">
+    <h2 class="text-3xl font-bold text-cyan-600 mb-6 text-center">User Management</h2>
+
+    <div class="bg-white shadow-lg rounded-lg p-6">
+        <ul class="space-y-4">
+            {% for user in users %}
+                <li class="flex justify-between items-center border-b pb-2 mb-2">
+                    <div>
+                        <span class="font-semibold text-gray-700">{{ user.username }}</span>
+                        <span class="text-gray-500">({{ user.email }})</span>
+                    </div>
+                    <div class="space-x-4">
+                        <a href="{% url 'base:user_edit' user.id %}" 
+                           class="bg-blue-500 text-white font-semibold py-1 px-4 rounded-lg hover:bg-blue-600 transition duration-300">
+                            Edit
+                        </a>
+                        <a href="{% url 'base:user_delete' user.id %}" 
+                           class="bg-red-500 text-white font-semibold py-1 px-4 rounded-lg hover:bg-red-600 transition duration-300">
+                            Delete
+                        </a>
+                    </div>
+                </li>
+            {% empty %}
+                <p class="text-gray-500">No users available.</p>
+            {% endfor %}
+        </ul>
+    </div>
+</div>
 {% endblock %}

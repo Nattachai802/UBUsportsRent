@@ -1,9 +1,25 @@
 {% extends 'base.html' %}
+
 {% block main %}
-<h2>Edit User</h2>
-<form method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit" class="btn btn-primary">Save</button>
-</form>
+<div class="container mx-auto py-6 px-4 sm:px-6 lg:px-8">
+    <div class="bg-white shadow-lg rounded-lg p-6 max-w-lg mx-auto">
+        <h2 class="text-2xl font-bold text-cyan-600 mb-4 text-center">Edit User</h2>
+        
+        <form method="post" class="space-y-6">
+            {% csrf_token %}
+            <div class="space-y-4">
+                {{ form.as_p }}
+            </div>
+            
+            <div class="flex justify-end space-x-4">
+                <button type="submit" class="bg-cyan-500 text-white font-semibold py-2 px-6 rounded-lg hover:bg-cyan-600 transition duration-300">
+                    Save
+                </button>
+                <a href="{% url 'base:user_list' %}" class="bg-gray-500 text-white font-semibold py-2 px-6 rounded-lg hover:bg-gray-600 transition duration-300">
+                    Cancel
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
 {% endblock %}

@@ -1,10 +1,22 @@
 {% extends 'base.html' %}
-{% block mian %}
-<h2>Confirm Deletion</h2>
-<p>Are you sure you want to delete {{ object.username }}?</p>
-<form method="post">
-    {% csrf_token %}
-    <button type="submit" class="btn btn-danger">Delete</button>
-    <a href="{% url 'base:user_list' %}" class="btn btn-secondary">Cancel</a>
-</form>
+
+{% block main %}
+<div class="container mx-auto py-6 px-4 sm:px-6 lg:px-8">
+    <div class="bg-white shadow-lg rounded-lg p-6 text-center">
+        <h2 class="text-2xl font-bold text-red-600 mb-4">Confirm Deletion</h2>
+        <p class="text-gray-700 mb-6">Are you sure you want to delete <strong class="text-red-500">{{ object.username }}</strong>?</p>
+        
+        <form method="post" class="space-y-4">
+            {% csrf_token %}
+            <div class="flex justify-center space-x-4">
+                <button type="submit" class="bg-red-500 text-white font-semibold py-2 px-6 rounded-lg hover:bg-red-600 transition duration-300">
+                    Delete
+                </button>
+                <a href="{% url 'base:user_list' %}" class="bg-gray-500 text-white font-semibold py-2 px-6 rounded-lg hover:bg-gray-600 transition duration-300">
+                    Cancel
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
 {% endblock %}

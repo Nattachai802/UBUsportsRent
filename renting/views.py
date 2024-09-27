@@ -1,9 +1,9 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect , get_object_or_404
 from django.urls import reverse_lazy
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib import messages
 
-from django.views.generic import CreateView, ListView , UpdateView
+from django.views.generic import CreateView, ListView , UpdateView , FormView
 from base.models import Booking , Equipment
 from .forms import BookingForm , ReturnForm
 
@@ -49,18 +49,39 @@ class BookingCreateView(LoginRequiredMixin, CreateView):
         
         return super().form_valid(form)
 
-class ReturnEquipmentView(UpdateView):
+class MyRentalsView(LoginRequiredMixin, ListView):
     model = Booking
-    form_class = ReturnForm
-    template_name = 'renting/return_form.html'
-    success_url = reverse_lazy('renting:equipment_list')
+    template_name = 'renting/my_rentals.html'
+    context_object_name = 'current_rentals'
 
-    def form_valid(self, form):
-        form.instance.return_date = form.cleaned_data['return_date']
-        form.instance.equipment.available_amount += form.instance.amount  # Increase available amount
-        form.instance.equipment.save()
-        
-        return super().form_valid(form)
+    def get_queryset(self):
+        # Filter bookings that belong to the user and have 'Rented' status
+        return Booking.objects.filter(user=self.request.user, status='Rented')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # Add rental history (returned items) to the context
+        context['current_rentals'] = Booking.objects.filter(user=self.request.user, status='approved')
+        context['rental_history'] = Booking.objects.filter(user=self.request.user, status='Returned')
+        return context
+
+class ReturnEquipmentView(LoginRequiredMixin, FormView):
+    template_name = 'renting/return_confirm.html'
+    success_url = reverse_lazy('renting:my_rentals')
+
+    def post(self, request, *args, **kwargs):
+        booking = get_object_or_404(Booking, id=self.kwargs['booking_id'], user=request.user)
+        equipment = booking.equipment
+
+        # Mark the booking as 'Returned'
+        booking.status = 'Returned'
+        booking.save()
+
+        # Update the available amount in Equipment
+        equipment.available_amount += booking.amount
+        equipment.save()
+
+        return redirect(self.success_url)
     
 
 class BookingHistoryView(ListView):

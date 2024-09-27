@@ -21,6 +21,11 @@
                 <li>
                     <a href="{% url 'renting:equipment_list' %}" class="bg-white text-cyan-600 font-semibold py-2 px-4 rounded-lg hover:bg-cyan-500 hover:text-white transition duration-300">Equipment</a>
                 </li>
+
+                <li>
+                    <a href="{% url 'renting:my_rentals' %}" class="bg-white text-cyan-600 font-semibold py-2 px-4 rounded-lg hover:bg-cyan-500 hover:text-white transition duration-300">Rental</a>
+                </li>
+                
                 <!-- Conditional Login/Logout -->
                 <li>
                     {% if user.is_authenticated %}
@@ -34,27 +39,41 @@
                         <svg xmlns="http://www.w3.org/2000/svg" width="35" height="35" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-circle-user"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="10" r="3"/><path d="M7 20.662V19a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v1.662"/></svg>
                     </a>
                 </li>
+                <h1 class="flex items-center text-white font-semibold py-2 px-4 rounded-lg">
+                    Welcome <strong class="ml-1">{{ request.user.username }}</strong>
                 <!-- Welcome Message -->
 
             </ul>
         </div>
     </div>
 </nav>
-<h1 class="flex items-center bg-white text-cyan-600 font-semibold py-2 px-4 rounded-lg">
-    Welcome <strong class="ml-1">{{ request.user.username }}</strong>
+
 </h1>
 <div x-data="{ isSuperUser: {{ request.user.is_superuser|yesno:'true,false' }} }">
     <!-- Sidebar Menu (Visible only for superusers) -->
-    <div x-show="isSuperUser" class="bg-gray-800 text-white w-64 space-y-6 py-7 px-2 absolute inset-y-0 left-0 transform -translate-x-full md:relative md:translate-x-0 transition duration-200 ease-in-out" id="superuser-sidebar">
+
+    <div x-show="isSuperUser" class="bg-gray-800 text-white py-1 px-2 flex items-center space-x-4 ">
+        <!-- Admin Panel Title -->
         <div class="flex items-center space-x-2">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-hand-platter"><path d="M12 3V2"/><path d="M5 10a7.1 7.1 0 0 1 14 0"/><path d="M4 10h16"/><path d="M2 14h12a2 2 0 1 1 0 4h-2"/><path d="m15.4 17.4 3.2-2.8a2 2 0 0 1 2.8 2.9l-3.6 3.3c-.7.8-1.7 1.2-2.8 1.2h-4c-1.1 0-2.1-.4-2.8-1.2L5 18"/><path d="M5 14v7H2"/></svg>
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-hand-platter">
+                <path d="M12 3V2"/>
+                <path d="M5 10a7.1 7.1 0 0 1 14 0"/>
+                <path d="M4 10h16"/>
+                <path d="M2 14h12a2 2 0 1 1 0 4h-2"/>
+                <path d="m15.4 17.4 3.2-2.8a2 2 0 0 1 2.8 2.9l-3.6 3.3c-.7.8-1.7 1.2-2.8 1.2h-4c-1.1 0-2.1-.4-2.8-1.2L5 18"/>
+                <path d="M5 14v7H2"/>
+            </svg>
             <span class="text-2xl font-extrabold">Admin Panel</span>
         </div>
-        <nav>
-            <a href="{% url 'Manageq:View' %}" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gray-700 hover:text-white">Manage Equipment</a>
-            <a href="{% url 'base:user_list' %}" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gray-700 hover:text-white">User Management</a>
-        </nav>
+
+        <!-- Horizontal Navigation Menu -->
+        <nav class="flex space-x-6"> <!-- Flexbox applied for horizontal layout -->
+            <a href="{% url 'Manageq:View' %}" class="py-2.5 px-4 rounded transition duration-200 hover:bg-gray-700 hover:text-white">Manage Equipment</a>
+            <a href="{% url 'base:user_list' %}" class="py-2.5 px-4 rounded transition duration-200 hover:bg-gray-700 hover:text-white">User Management</a>
+            <a href="{% url 'base:booking_approval'%}" class="py-2.5 px-4 rounded transition duration-200 hover:bg-gray-700 hover:text-white">Approve Booking</a>
+         </nav>
     </div>
+</div>
 
 <main class="container mx-auto py-0">
 
@@ -76,8 +95,14 @@
                 <h4 class="text-xl font-semibold text-gray-800">{{ equipment.name }}</h4>
                 <p class="text-gray-600">{{ equipment.type }}</p>
                 <p class="mt-2 text-gray-500">Available: {{ equipment.available_amount }}</p>
-                <div class="mt-4">
-                    <a href="{% url 'renting:booking' equipment.id %}" class="bg-cyan-500 text-white py-2 px-6 rounded-lg hover:bg-cyan-600 transition duration-200">Rent Now</a>
+                <div x-data="{ availableAmount: {{ equipment.available_amount }} }">
+                    <a href="{% url 'renting:booking' equipment.id %}" 
+                       class="block mt-4 bg-cyan-500 text-white text-center py-2 px-4 rounded hover:bg-cyan-600 transition duration-300"
+                       :class="{ 'opacity-50 cursor-not-allowed bg-gray-500 hover:bg-gray-700 transition duration-300': availableAmount === 0 }"
+                       @click.prevent="availableAmount === 0 ? false : window.location = $event.target.href">
+                       Rent Now
+                    </a>
+                    <p x-show="availableAmount === 0" class="text-red-500 mt-2">Not available for rent.</p>
                 </div>
             </div>
             {% empty %}

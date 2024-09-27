@@ -47,6 +47,11 @@ class EquipmentUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView,Su
     success_url = reverse_lazy('Manageq:View')
     success_message = "Equipment successfully updated."
 
+    def form_valid(self, form):
+        form.instance.picture = self.request.FILES.get('picture')
+        form.save()
+        return super().form_valid(form)
+    
     def test_func(self):
         if not self.request.user.is_superuser:
             raise PermissionDenied

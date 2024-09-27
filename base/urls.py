@@ -22,7 +22,8 @@ urlpatterns = [
         template_name='login/password_reset_complete.html'),
          name='password_reset_complete'),
     
-    path('notifications/', notification_list_view, name='notification_list'),
+    path('notifications/', NotificationListView.as_view(), name='notification_list'),
+    path('notifications/<int:notification_id>/read/', mark_as_read, name='mark_as_read'),
     
     path('users/', UserListView.as_view(), name='user_list'),
     path('users/edit/<int:pk>/', UserUpdateView.as_view(), name='user_edit'),
