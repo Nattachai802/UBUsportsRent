@@ -11,13 +11,13 @@
         <div>
             <ul class="menu menu-horizontal p-0 text-lg px-1 ">
                 <li>
-                    <a href="{% url 'base:notification_list' %}" class=" text-white font-semibold  hover:bg-gray-700 transition duration-200 ">Notifications</a>
+                    <a href="{% url 'base:notification_list' %}" class=" text-white font-semibold  hover:bg-gray-700 transition duration-200 ">การแจ้งเตือน</a>
                 </li>
                 <li>
-                    <a href="{% url 'renting:equipment_list' %}" class= "text-white font-semibold hover:bg-gray-700 transition duration-200">Equipment</a>
+                    <a href="{% url 'renting:equipment_list' %}" class= "text-white font-semibold hover:bg-gray-700 transition duration-200">ยืมอุปกรณ์</a>
                 </li>
                 <li>
-                    <a href="{% url 'renting:my_rentals' %}" class= "text-white font-semibold hover:bg-gray-700 transition duration-200">Rental</a>
+                    <a href="{% url 'renting:my_rentals' %}" class= "text-white font-semibold hover:bg-gray-700 transition duration-200">คืนอุปกรณ์</a>
                 </li>
                 
                 <li class = 'hover:bg-gray-700 transition duration-200 rounded-lg'>
@@ -132,12 +132,11 @@
                 {% endfor %}
             </div>
             <!-- ปุ่มเลื่อนซ้ายและขวา -->
-            <div class="swiper-button-next"></div>
-            <div class="swiper-button-prev"></div>
+
         </div>
     </section>
-    <div class="container grid grid-cols-1 md:grid-cols-1 gap-8">
-        <h1>Booking Calendar</h1>
+    <div class="container grid grid-cols-1 md:grid-cols-1 gap-8 ">
+        <h1 class='text-3xl font-bold text-cyan-800 mb-6 '>ปฏิทินการยืมคืนของผู้ใช้งาน</h1>
         <div id='calendar'>
 
         </div>

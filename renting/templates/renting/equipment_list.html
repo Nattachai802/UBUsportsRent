@@ -1,6 +1,45 @@
 {% extends "base.html" %}
 
 {% block main %}
+<nav class="navbar bg-purple-400 shadow-lg">
+    <div class="container mx-auto flex justify-between items-center px-6">
+        <!-- Logo -->
+        <div>
+            <a href="{% url 'base:home' %}" class="text-white font-bold text-3xl hover:text-primary-content transition duration-300">UBU Sports Rent</a>
+        </div>
+        <!-- Menu -->
+        <div>
+            <ul class="menu menu-horizontal p-0 text-lg px-1 ">
+                <li>
+                    <a href="{% url 'base:notification_list' %}" class=" text-white font-semibold  hover:bg-gray-700 transition duration-200 ">การแจ้งเตือน</a>
+                </li>
+                <li>
+                    <a href="{% url 'renting:equipment_list' %}" class= "text-white font-semibold hover:bg-gray-700 transition duration-200">ยืมอุปกรณ์</a>
+                </li>
+                <li>
+                    <a href="{% url 'renting:my_rentals' %}" class= "text-white font-semibold hover:bg-gray-700 transition duration-200">คืนอุปกรณ์</a>
+                </li>
+                
+                <li class = 'hover:bg-gray-700 transition duration-200 rounded-lg'>
+                    <a href="{% url 'base:account_dashboard' %}">
+                    <span class="text-white font-semibold ">Welcome <strong>{{ request.user.username }}</strong></span>
+                    </a>
+                </li>
+                
+                
+                <li>
+                    {% if user.is_authenticated %}
+                        <a href="{% url 'base:logout' %}" class="bg-red-500 text-white font-semibold py-2 px-4 rounded-lg hover:bg-red-600 transition duration-300">Logout</a>
+                    {% else %}
+                        <a href="{% url 'base:Login' %}" class="bg-green-500 text-white font-semibold py-2 px-4 rounded-lg hover:bg-green-600 transition duration-300">Login</a>
+                    {% endif %}
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+
 <div class="container mx-auto py-8 flex">
     <!-- Sidebar สำหรับกรองชนิดของอุปกรณ์ -->
     <aside class="w-1/4 bg-white shadow-lg rounded-lg p-4 mr-8">
@@ -42,8 +81,9 @@
                 </label>
             </div>
             <!-- Add more filter options as needed -->
-            <div class="form-control mt-4">
+            <div class="form-control mt-4 space-y-2">
                 <button type="submit" class="btn btn-primary w-full">Apply Filter</button>
+                <a href="{% url 'renting:equipment_list' %}" class="btn btn-outline bg-red-100 text-red-600 w-full hover:bg-red-200  ">รีเซ็ตการกรอง</a>
             </div>
         </form>
     </aside>
@@ -51,6 +91,25 @@
     <!-- Equipment Cards Section -->
     <div class="flex-1">
         <h1 class="text-3xl font-semibold text-center mb-8 text-cyan-600">Available Equipment</h1>
+        <form method="GET" action="{% url 'renting:equipment_list' %}" class="mb-4 flex space-x-2 ">
+            <input type="text" name="q" placeholder="Search..." class="input input-bordered w-full" value="{{ request.GET.q }}">
+            <button type="submit" class="btn btn-primary mt-0 ">Search</button>
+        </form>
+        <div class="flex items-center justify-start mb-4 px-9 space-x-2 ">
+            <span class="font-semibold text-gray-600">เรียงโดย</span>
+            <div class="flex items-start space-x-2">
+                <a href="?sort=created_at" 
+                   class="px-4 py-2 rounded-lg font-medium transition-colors duration-300 {% if request.GET.sort == 'created_at' or not request.GET.sort %}bg-green-500 text-white hover:bg-green-600 {% else %} bg-white text-gray-700 border border-gray-300 hover:bg-gray-100 {% endif %}">
+                   ล่าสุด
+                </a>
+                <a href="?sort=available_amount" 
+                   class="px-4 py-2 rounded-lg font-medium transition-colors duration-300 {% if request.GET.sort == 'available_amount' %} bg-green-500 text-white hover:bg-green-600 {% else %}bg-white text-gray-700 border border-gray-300 hover:bg-gray-100{% endif %}">
+                   จำนวนมากไปน้อย
+                </a>
+            </div>
+            
+        </div>
+        
 
         {% if equipments %}
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -65,7 +124,7 @@
                     <p>Available: {{ equipment.available_amount }}</p>
                     <div x-data="{ availableAmount: {{ equipment.available_amount }} }">
                         <a href="{% url 'renting:booking' equipment.id %}" 
-                           class="btn btn-primary w-full mt-4"
+                           class="btn btn-primary w-full mt-4" data-tooltip="คลิกเพื่อยืมอุปกรณ์"
                            :class="{ 'btn-disabled bg-gray-500 hover:bg-gray-700': availableAmount === 0 }"
                            @click.prevent="availableAmount === 0 ? false : window.location = $event.target.href">
                            Rent Now
@@ -76,6 +135,19 @@
             </div>
             {% endfor %}
         </div>
+        <div class="mt-8 flex justify-center" > 
+            <span class="btn-group ">
+              {% if page_obj.has_previous %}
+                <a href="?page={{ page_obj.previous_page_number }} "  class="btn btn-outline "> Previous</a>
+              {% endif %}
+              <span>
+                <span class="btn">{{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+              </span>
+              {% if page_obj.has_next %}
+                <a href="?page={{ page_obj.next_page_number }}" class="btn btn-outline" >Next</a>
+              {% endif %}
+            </span>
+          </div>
         {% else %}
         <p class="text-center text-gray-500">No equipment available at the moment.</p>
         {% endif %}

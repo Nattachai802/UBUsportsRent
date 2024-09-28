@@ -2,24 +2,42 @@ from django.shortcuts import render, redirect , get_object_or_404
 from django.urls import reverse_lazy
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib import messages
+from django.core.paginator import Paginator
 
 from django.views.generic import CreateView, ListView , UpdateView , FormView
 from base.models import Booking , Equipment
 from .forms import BookingForm , ReturnForm
+from django.db.models import Q
+
 
 
 class EquipmentListView(LoginRequiredMixin, ListView):
+    paginate_by = 9
     model = Equipment
     template_name = 'renting/equipment_list.html'
     context_object_name = 'equipments'
+
     # การ Override get_queryset เพื่อใส่เงื่อนไขการกรองข้อมูล
     def get_queryset(self):
         queryset = super().get_queryset()  # ดึงข้อมูลอุปกรณ์ทั้งหมด
         equipment_type = self.request.GET.getlist('type')  # รับค่าชนิดอุปกรณ์ที่เลือกจากการกรอง
+        sort_by = self.request.GET.get('sort', 'created_at') # ค่าเริ่มต้นคือเรียงตามวันที่เพิ่มล่าสุด
+        query = self.request.GET.get('q')
+
+        if query:
+            queryset = queryset.filter(
+                Q(name__icontains=query)  
+            )
 
         # ถ้ามีการเลือกชนิดอุปกรณ์ จะกรองข้อมูลตามชนิดที่เลือก
         if equipment_type:
             queryset = queryset.filter(type__in=equipment_type)
+        
+        if sort_by == 'available_amount':
+            queryset = queryset.order_by('-available_amount')
+
+        else:
+            queryset = queryset.order_by('-created_at')  # เรียงตามวันที่เพิ่มใหม่ล่าสุด
 
         return queryset
 
@@ -27,8 +45,9 @@ class EquipmentListView(LoginRequiredMixin, ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['selected_types'] = self.request.GET.getlist('type')  # ส่งค่าชุดกรองที่เลือกไปยัง template
+        context['sort'] = self.request.GET.get('sort', 'created_at')
+        context['search_query'] = self.request.GET.get('q', '') 
         return context
-
 
 
 class BookingCreateView(LoginRequiredMixin, CreateView):
