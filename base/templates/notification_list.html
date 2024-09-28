@@ -1,23 +1,76 @@
 {% extends 'base.html' %}
 
 {% block main %}
-<div class="container mx-auto py-6">
-    <h1 class="text-2xl font-bold mb-6">Notifications</h1>
+<nav class="navbar bg-purple-400 shadow-lg">
+    <div class="container mx-auto flex justify-between items-center px-6">
+        <!-- Logo -->
+        <div>
+            <a href="{% url 'base:home' %}" class="text-white font-bold text-3xl hover:text-primary-content transition duration-300">UBU Sports Rent</a>
+        </div>
+        <!-- Menu -->
+        <div>
+            <ul class="menu menu-horizontal p-0 text-lg px-1 ">
+                <li>
+                    <a href="{% url 'base:notification_list' %}" class=" text-white font-semibold  hover:bg-gray-700 transition duration-200 ">Notifications</a>
+                </li>
+                <li>
+                    <a href="{% url 'renting:equipment_list' %}" class= "text-white font-semibold hover:bg-gray-700 transition duration-200">Equipment</a>
+                </li>
+                <li>
+                    <a href="{% url 'renting:my_rentals' %}" class= "text-white font-semibold hover:bg-gray-700 transition duration-200">Rental</a>
+                </li>
+                
+                <li class = 'hover:bg-gray-700 transition duration-200 rounded-lg'>
+                    <a href="{% url 'base:account_dashboard' %}">
+                    <span class="text-white font-semibold ">Welcome <strong>{{ request.user.username }}</strong></span>
+                    </a>
+                </li>
+                
+                
+                <li>
+                    {% if user.is_authenticated %}
+                        <a href="{% url 'base:logout' %}" class="bg-red-500 text-white font-semibold py-2 px-4 rounded-lg hover:bg-red-600 transition duration-300">Logout</a>
+                    {% else %}
+                        <a href="{% url 'base:Login' %}" class="bg-green-500 text-white font-semibold py-2 px-4 rounded-lg hover:bg-green-600 transition duration-300">Login</a>
+                    {% endif %}
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
 
+<div class="container mx-auto py-6">
+    <h1 class="text-3xl font-bold mb-6">Notifications</h1>
+    <p class="text-gray-700 mb-4 font-semibold">You have {{ unread_count }} unread notifications.</p>
     {% if notifications %}
-        <ul class="bg-white shadow-md rounded-lg">
+        <ul class="space-y-4">
             {% for notification in notifications %}
-            <li class="border-b p-4">
-                <span>{{ notification.message }}</span>
-                <span class="text-sm text-gray-500"> - {{ notification.created_at|date:"F d, Y" }}</span>
-                {% if not notification.is_read %}
-                    <a href="{% url 'base:mark_as_read' notification.id %}" class="ml-4 text-blue-500">Mark as read</a>
-                {% endif %}
+            <li class="card bg-base-100 shadow-md">
+                <div class="card-body p-4">
+                    <div class="flex justify-between items-center">
+                        <span class="font-semibold">{{ notification.message }}</span>
+                        <span class="text-sm text-gray-500">{{ notification.created_at|date:"F d, Y" }}</span>
+                    </div>
+                    <div class="flex justify-end mt-2">
+                        {% if not notification.is_read %}
+                            <a href="{% url 'base:mark_as_read' notification.id %}" class="btn btn-sm btn-outline btn-primary">Mark as read</a>
+                        {% else %}
+                            <span class="badge badge-primary">Read</span>
+                        {% endif %}
+                    </div>
+                </div>
             </li>
             {% endfor %}
         </ul>
     {% else %}
-        <p>No new notifications</p>
+        <div class="alert alert-info shadow-lg">
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current flex-shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m0-4h.01M12 20h.01M6.938 4.938a9 9 0 1112.727 12.727A9 9 0 016.938 4.938z" />
+                </svg>
+                <span>No new notifications</span>
+            </div>
+        </div>
     {% endif %}
 </div>
 {% endblock %}

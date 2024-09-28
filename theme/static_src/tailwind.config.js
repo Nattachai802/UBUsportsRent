@@ -5,6 +5,8 @@
  * https://unpkg.com/browse/tailwindcss@latest/stubs/defaultConfig.stub.js
  */
 
+const { default: daisyui } = require('daisyui');
+
 module.exports = {
     content: [
         /**
@@ -53,5 +55,16 @@ module.exports = {
         require('@tailwindcss/forms'),
         require('@tailwindcss/typography'),
         require('@tailwindcss/aspect-ratio'),
+        require('daisyui'),
     ],
+    daisyui : {
+        themes : [
+            {
+            mytheme : {
+                "primary": "#22c55e",
+
+            },
+        },
+        ],
+    },
 }

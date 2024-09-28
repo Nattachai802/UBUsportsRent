@@ -12,6 +12,22 @@ class EquipmentListView(LoginRequiredMixin, ListView):
     model = Equipment
     template_name = 'renting/equipment_list.html'
     context_object_name = 'equipments'
+    # การ Override get_queryset เพื่อใส่เงื่อนไขการกรองข้อมูล
+    def get_queryset(self):
+        queryset = super().get_queryset()  # ดึงข้อมูลอุปกรณ์ทั้งหมด
+        equipment_type = self.request.GET.getlist('type')  # รับค่าชนิดอุปกรณ์ที่เลือกจากการกรอง
+
+        # ถ้ามีการเลือกชนิดอุปกรณ์ จะกรองข้อมูลตามชนิดที่เลือก
+        if equipment_type:
+            queryset = queryset.filter(type__in=equipment_type)
+
+        return queryset
+
+    # เพิ่มข้อมูลลงใน context (เช่นตัวกรองที่เลือก)
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['selected_types'] = self.request.GET.getlist('type')  # ส่งค่าชุดกรองที่เลือกไปยัง template
+        return context
 
 
 

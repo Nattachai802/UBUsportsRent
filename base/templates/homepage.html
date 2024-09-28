@@ -1,32 +1,32 @@
 {% extends "base.html" %}
 {% block main %}
 <!-- Navbar -->
-<nav class="bg-cyan-600 py-4 shadow-lg">
+<nav class="navbar bg-purple-400 shadow-lg">
     <div class="container mx-auto flex justify-between items-center px-6">
         <!-- Logo -->
         <div>
-            <a href="{% url 'base:home' %}" class="text-white font-bold text-3xl hover:text-cyan-200 transition duration-300">UBU Sports Rent</a>
+            <a href="{% url 'base:home' %}" class="text-white font-bold text-3xl hover:text-primary-content transition duration-300">UBU Sports Rent</a>
         </div>
         <!-- Menu -->
         <div>
-            <ul class="flex space-x-4 text-lg">
+            <ul class="menu menu-horizontal p-0 text-lg px-1 ">
                 <li>
-                    <a href="{% url 'base:home' %}" class="bg-white text-cyan-600 font-semibold py-2 px-4 rounded-lg hover:bg-cyan-500 hover:text-white transition duration-300">Home</a>
+                    <a href="{% url 'base:notification_list' %}" class=" text-white font-semibold  hover:bg-gray-700 transition duration-200 ">Notifications</a>
                 </li>
                 <li>
-                    <a href="{% url 'base:notification_list' %}" class="bg-white text-cyan-600 font-semibold py-2 px-4 rounded-lg hover:bg-cyan-500 hover:text-white transition duration-300">
-                        Notifications 
-                    </a>
+                    <a href="{% url 'renting:equipment_list' %}" class= "text-white font-semibold hover:bg-gray-700 transition duration-200">Equipment</a>
                 </li>
                 <li>
-                    <a href="{% url 'renting:equipment_list' %}" class="bg-white text-cyan-600 font-semibold py-2 px-4 rounded-lg hover:bg-cyan-500 hover:text-white transition duration-300">Equipment</a>
-                </li>
-
-                <li>
-                    <a href="{% url 'renting:my_rentals' %}" class="bg-white text-cyan-600 font-semibold py-2 px-4 rounded-lg hover:bg-cyan-500 hover:text-white transition duration-300">Rental</a>
+                    <a href="{% url 'renting:my_rentals' %}" class= "text-white font-semibold hover:bg-gray-700 transition duration-200">Rental</a>
                 </li>
                 
-                <!-- Conditional Login/Logout -->
+                <li class = 'hover:bg-gray-700 transition duration-200 rounded-lg'>
+                    <a href="{% url 'base:account_dashboard' %}">
+                    <span class="text-white font-semibold ">Welcome <strong>{{ request.user.username }}</strong></span>
+                    </a>
+                </li>
+                
+                
                 <li>
                     {% if user.is_authenticated %}
                         <a href="{% url 'base:logout' %}" class="bg-red-500 text-white font-semibold py-2 px-4 rounded-lg hover:bg-red-600 transition duration-300">Logout</a>
@@ -34,26 +34,17 @@
                         <a href="{% url 'base:Login' %}" class="bg-green-500 text-white font-semibold py-2 px-4 rounded-lg hover:bg-green-600 transition duration-300">Login</a>
                     {% endif %}
                 </li>
-                <li>
-                    <a href="{% url 'base:account_dashboard' %}">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="35" height="35" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-circle-user"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="10" r="3"/><path d="M7 20.662V19a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v1.662"/></svg>
-                    </a>
-                </li>
-                <h1 class="flex items-center text-white font-semibold py-2 px-4 rounded-lg">
-                    Welcome <strong class="ml-1">{{ request.user.username }}</strong>
-                <!-- Welcome Message -->
-
             </ul>
         </div>
     </div>
 </nav>
 
+
 </h1>
+
 <div x-data="{ isSuperUser: {{ request.user.is_superuser|yesno:'true,false' }} }">
     <!-- Sidebar Menu (Visible only for superusers) -->
-
-    <div x-show="isSuperUser" class="bg-gray-800 text-white py-1 px-2 flex items-center space-x-4 ">
-        <!-- Admin Panel Title -->
+    <div x-show="isSuperUser" class="bg-gray-800 text-white py-1 px-2 flex items-center space-x-4">
         <div class="flex items-center space-x-2">
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-hand-platter">
                 <path d="M12 3V2"/>
@@ -65,27 +56,21 @@
             </svg>
             <span class="text-2xl font-extrabold">Admin Panel</span>
         </div>
-
-        <!-- Horizontal Navigation Menu -->
-        <nav class="flex space-x-6"> <!-- Flexbox applied for horizontal layout -->
+        <nav class="flex space-x-6">
             <a href="{% url 'Manageq:View' %}" class="py-2.5 px-4 rounded transition duration-200 hover:bg-gray-700 hover:text-white">Manage Equipment</a>
             <a href="{% url 'base:user_list' %}" class="py-2.5 px-4 rounded transition duration-200 hover:bg-gray-700 hover:text-white">User Management</a>
             <a href="{% url 'base:booking_approval'%}" class="py-2.5 px-4 rounded transition duration-200 hover:bg-gray-700 hover:text-white">Approve Booking</a>
-         </nav>
+        </nav>
     </div>
 </div>
-
 <main class="container mx-auto py-0">
 
     <!-- Welcome Section -->
-    <section class="text-center mb-12">
+    <section class="text-left mb-12">
         <h2 class="text-5xl font-bold text-cyan-800 mb-4">Welcome to UBU Sports Rent</h2>
-        <p class="text-gray-700 mb-6 text-lg">Your one-stop platform for renting sports equipment at UBU. Register now and start renting today!</p>
+        <p class="text-gray-700 mb-6 text-lg py-px font-extralight">Your one-stop platform for renting sports equipment at UBU. Register now and start renting today!</p>
     </section>
-    <div class="container grid grid-cols-1 md:grid-cols-2 gap-8">
-        <h1>Booking Calendar</h1>
-        <div id='calendar'></div>
-    </div>
+
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             var calendarEl = document.getElementById('calendar');
@@ -128,30 +113,51 @@
     <!-- Featured Equipment Section -->
     <section class="mt-12">
         <h3 class="text-3xl font-bold text-cyan-800 mb-6">Featured Equipment</h3>
-        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
-            <!-- Equipment Card Example -->
-            {% for equipment in equipments %}
-            <div class="bg-white shadow-lg rounded-lg p-6 hover:shadow-2xl transition duration-300">
-                <img src="{{ equipment.picture.url }}" alt="{{ equipment.name }}" class="w-full h-48 object-cover rounded-md mb-4">
-                <h4 class="text-xl font-semibold text-gray-800">{{ equipment.name }}</h4>
-                <p class="text-gray-600">{{ equipment.type }}</p>
-                <p class="mt-2 text-gray-500">Available: {{ equipment.available_amount }}</p>
-                <div x-data="{ availableAmount: {{ equipment.available_amount }} }">
-                    <a href="{% url 'renting:booking' equipment.id %}" 
-                       class="block mt-4 bg-cyan-500 text-white text-center py-2 px-4 rounded hover:bg-cyan-600 transition duration-300"
-                       :class="{ 'opacity-50 cursor-not-allowed bg-gray-500 hover:bg-gray-700 transition duration-300': availableAmount === 0 }"
-                       @click.prevent="availableAmount === 0 ? false : window.location = $event.target.href">
-                       Rent Now
-                    </a>
-                    <p x-show="availableAmount === 0" class="text-red-500 mt-2">Not available for rent.</p>
+        <!-- Container สำหรับ Swiper -->
+        <div class="swiper-container ">
+            <div class="swiper-wrapper">
+                <!-- Carousel Item เริ่มต้น -->
+                {% for equipment in equipments %}
+                <div class="swiper-slide">
+                    <div class="card bg-white shadow-lg rounded-lg hover:shadow-2xl transition duration-300 w-full md:w-120 p-4">
+                        <img src="{{ equipment.picture.url }}" alt="{{ equipment.name }}" class="w-full h-48 object-cover rounded-md">
+                        <div class="card-body text-center">
+                            <h4 class="card-title">{{ equipment.name }}</h4>
+                            <p class="badge badge-outline text-gray-600">{{ equipment.type }}</p>
+                            <p class="text-gray-500 mt-2 text-left">Available: {{ equipment.available_amount }}</p>
+                            <a href="{% url 'renting:booking' equipment.id %}" class="btn btn-primary mt-4">Rent Now</a>
+                        </div>
+                    </div>
                 </div>
+                {% endfor %}
             </div>
-            {% empty %}
-            <p class="text-gray-600">No equipment available at the moment.</p>
-            {% endfor %}
+            <!-- ปุ่มเลื่อนซ้ายและขวา -->
+            <div class="swiper-button-next"></div>
+            <div class="swiper-button-prev"></div>
         </div>
     </section>
+    <div class="container grid grid-cols-1 md:grid-cols-1 gap-8">
+        <h1>Booking Calendar</h1>
+        <div id='calendar'>
+
+        </div>
+    </div>
 </main>
+<script>
+    var swiper = new Swiper('.swiper-container', {
+        slidesPerView: 3,  // จำนวนสไลด์ที่แสดงพร้อมกัน
+        spaceBetween: 30,  // ระยะห่างระหว่างสไลด์
+        loop: true,  // เปิดการวนลูปสไลด์
+        autoplay: {
+            delay: 3000,  // เลื่อนอัตโนมัติทุกๆ 3 วินาที
+            disableOnInteraction: false,
+        },
+        navigation: {
+            nextEl: '.swiper-button-next',
+            prevEl: '.swiper-button-prev',
+        },
+    });
+</script>
 </div>
 <!-- Footer -->
 <footer class="bg-cyan-700 p-6 mt-12">

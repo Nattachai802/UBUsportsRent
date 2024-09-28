@@ -1,34 +1,84 @@
 {% extends "base.html" %}
 
 {% block main %}
-<div class="container mx-auto py-8">
-    <h1 class="text-3xl font-semibold text-center mb-8 text-cyan-600">Available Equipment</h1>
+<div class="container mx-auto py-8 flex">
+    <!-- Sidebar สำหรับกรองชนิดของอุปกรณ์ -->
+    <aside class="w-1/4 bg-white shadow-lg rounded-lg p-4 mr-8">
+        <h2 class="text-xl font-bold text-cyan-600 mb-4">Filter by Type</h2>
+        <form method="GET" action="{% url 'renting:equipment_list' %}">
+            <div class="form-control">
+                <label class="cursor-pointer label">
+                    <span class="label-text">อุปกรณ์กีฬากลางแจ้ง</span> 
+                    <input type="checkbox" name="type" value="อุปกรณ์กีฬากลางแจ้ง" class="checkbox checkbox-primary" 
+                           {% if 'อุปกรณ์กีฬากลางแจ้ง' in request.GET.type %}checked{% endif %}>
+                </label>
+            </div>
+            <div class="form-control">
+                <label class="cursor-pointer label">
+                    <span class="label-text">อุปกรณ์กีฬาภายในอาคาร</span> 
+                    <input type="checkbox" name="type" value="อุปกรณ์กีฬาภายในอาคาร" class="checkbox checkbox-primary" 
+                           {% if 'อุปกรณ์กีฬาภายในอาคาร' in request.GET.type %}checked{% endif %}>
+                </label>
+            </div>
+            <div class="form-control">
+                <label class="cursor-pointer label">
+                    <span class="label-text">อุปกรณ์กีฬาทางน้ำ</span> 
+                    <input type="checkbox" name="type" value="อุปกรณ์กีฬาทางน้ำ" class="checkbox checkbox-primary" 
+                           {% if 'อุปกรณ์กีฬาทางน้ำ' in request.GET.type %}checked{% endif %}>
+                </label>
+            </div>
+            <div class="form-control">
+                <label class="cursor-pointer label">
+                    <span class="label-text">อุปกรณ์กีฬาผจญภัย</span> 
+                    <input type="checkbox" name="type" value="อุปกรณ์กีฬาผจญภัย" class="checkbox checkbox-primary" 
+                           {% if 'อุปกรณ์กีฬาผจญภัย' in request.GET.type %}checked{% endif %}>
+                </label>
+            </div>
+            <div class="form-control">
+                <label class="cursor-pointer label">
+                    <span class="label-text">อุปกรณ์กีฬาประเภททีม</span> 
+                    <input type="checkbox" name="type" value="อุปกรณ์กีฬาประเภททีม" class="checkbox checkbox-primary" 
+                           {% if 'อุปกรณ์กีฬาประเภททีม' in request.GET.type %}checked{% endif %}>
+                </label>
+            </div>
+            <!-- Add more filter options as needed -->
+            <div class="form-control mt-4">
+                <button type="submit" class="btn btn-primary w-full">Apply Filter</button>
+            </div>
+        </form>
+    </aside>
 
-    {% if equipments %}
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-        {% for equipment in equipments %}
-        <div class="bg-white shadow-lg rounded-lg overflow-hidden">
-            <img src="{{ equipment.picture.url }}" alt="{{ equipment.name }}" class="w-full h-48 object-cover">
-            <div class="p-4">
-                <h2 class="text-lg font-bold text-gray-800">{{ equipment.name }}</h2>
-                <p class="text-gray-600">{{ equipment.type }}</p>
-                <p class="text-gray-600">Available: {{ equipment.available_amount }}</p>
+    <!-- Equipment Cards Section -->
+    <div class="flex-1">
+        <h1 class="text-3xl font-semibold text-center mb-8 text-cyan-600">Available Equipment</h1>
 
-                <div x-data="{ availableAmount: {{ equipment.available_amount }} }">
-                    <a href="{% url 'renting:booking' equipment.id %}" 
-                       class="block mt-4 bg-cyan-500 text-white text-center py-2 px-4 rounded hover:bg-cyan-600 transition duration-300"
-                       :class="{ 'opacity-50 cursor-not-allowed bg-gray-500 hover:bg-gray-700 transition duration-300': availableAmount === 0 }"
-                       @click.prevent="availableAmount === 0 ? false : window.location = $event.target.href">
-                       Rent Now
-                    </a>
-                    <p x-show="availableAmount === 0" class="text-red-500 mt-2">Not available for rent.</p>
+        {% if equipments %}
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+            {% for equipment in equipments %}
+            <div class="card bg-base-100 shadow-lg">
+                <figure>
+                    <img src="{{ equipment.picture.url }}" alt="{{ equipment.name }}" class="h-48 w-full object-cover">
+                </figure>
+                <div class="card-body">
+                    <h2 class="card-title">{{ equipment.name }}</h2>
+                    <p>{{ equipment.type }}</p>
+                    <p>Available: {{ equipment.available_amount }}</p>
+                    <div x-data="{ availableAmount: {{ equipment.available_amount }} }">
+                        <a href="{% url 'renting:booking' equipment.id %}" 
+                           class="btn btn-primary w-full mt-4"
+                           :class="{ 'btn-disabled bg-gray-500 hover:bg-gray-700': availableAmount === 0 }"
+                           @click.prevent="availableAmount === 0 ? false : window.location = $event.target.href">
+                           Rent Now
+                        </a>
+                        <p x-show="availableAmount === 0" class="text-red-500 mt-2">Not available for rent.</p>
+                    </div>
                 </div>
             </div>
+            {% endfor %}
         </div>
-        {% endfor %}
+        {% else %}
+        <p class="text-center text-gray-500">No equipment available at the moment.</p>
+        {% endif %}
     </div>
-    {% else %}
-    <p class="text-center text-gray-500">No equipment available at the moment.</p>
-    {% endif %}
 </div>
 {% endblock %}
