@@ -1,44 +1,118 @@
 {% extends "base.html" %}
 
 {% block main %}
+<nav class="navbar bg-purple-400 shadow-lg">
+    <div class="container mx-auto flex justify-between items-center px-6">
+        <!-- Logo -->
+        <div>
+            <a href="{% url 'base:home' %}" class="text-white font-bold text-3xl hover:text-primary-content transition duration-300">UBU Sports Rent</a>
+        </div>
+        <!-- Menu -->
+        <div>
+            <ul class="menu menu-horizontal p-0 text-lg px-1 ">
+                <li>
+                    <a href="{% url 'base:notification_list' %}" class=" text-white font-semibold  hover:bg-gray-700 transition duration-200 ">การแจ้งเตือน</a>
+                </li>
+                <li>
+                    <a href="{% url 'renting:equipment_list' %}" class= "text-white font-semibold hover:bg-gray-700 transition duration-200">ยืมอุปกรณ์</a>
+                </li>
+                <li>
+                    <a href="{% url 'renting:my_rentals' %}" class= "text-white font-semibold hover:bg-gray-700 transition duration-200">คืนอุปกรณ์</a>
+                </li>
+                
+                <li class = 'hover:bg-gray-700 transition duration-200 rounded-lg'>
+                    <a href="{% url 'base:account_dashboard' %}">
+                    <span class="text-white font-semibold ">Welcome <strong>{{ request.user.username }}</strong></span>
+                    </a>
+                </li>
+                
+                
+                <li>
+                    {% if user.is_authenticated %}
+                        <a href="{% url 'base:logout' %}" class="bg-red-500 text-white font-semibold py-2 px-4 rounded-lg hover:bg-red-600 transition duration-300">Logout</a>
+                    {% else %}
+                        <a href="{% url 'base:Login' %}" class="bg-green-500 text-white font-semibold py-2 px-4 rounded-lg hover:bg-green-600 transition duration-300">Login</a>
+                    {% endif %}
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+
 <div class="container mx-auto py-6">
     <h1 class="text-2xl font-bold mb-6">My Rentals</h1>
+    <p class="text-sm text-gray-500">Note: Please return the equipment before the due date to avoid any late fees.</p>
 
+
+    <!-- Current Rentals Section -->
     <section>
-        <h2 class="text-lg font-semibold">Current Rentals</h2>
+        <h2 class="text-lg font-semibold mb-4">Current Rentals</h2>
         {% if current_rentals %}
-            <ul class="space-y-4">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                 {% for rental in current_rentals %}
-                <li class="bg-white shadow-md rounded-lg p-4">
-                    <h3 class="text-lg font-semibold">{{ rental.equipment.name }}</h3>
-                    <p>Due on: {{ rental.return_date }}</p>
-                    <p>Amount rented: {{ rental.amount }}</p>
-                    <form method="POST" action="{% url 'renting:return_equipment' rental.id %}">
-                        {% csrf_token %}
-                        <button type="submit" class="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition duration-300">Return</button>
-                    </form>
-                </li>
+                <div class="card bg-white shadow-md rounded-lg overflow-hidden">
+                    <figure>
+                        <img src="{{ rental.equipment.picture.url }}" alt="{{ rental.equipment.name }}" class="w-full h-48 object-cover">
+                    </figure>
+                    <div class="card-body p-4">
+                        <h3 class="text-xl font-semibold">{{ rental.equipment.name }}</h3>
+                        <p class="text-gray-600 badge badge-outline">Due on: {{ rental.return_date }}</p>
+                        <p class="text-gray-600 badge badge-outline">Amount rented: {{ rental.amount }}</p>
+                        <form method="POST" action="{% url 'renting:return_equipment' rental.id %}">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-primary w-full mt-4" onclick="confirmReturn()">Return</button>
+                        </form>
+                        <script>
+                            function confirmReturn() {
+                                if (confirm("Are you sure you want to return this equipment?")) {
+                                    document.forms[0].submit();
+                                }
+                            }
+                        </script>
+                    </div>
+                </div>
                 {% endfor %}
-            </ul>
+            </div>
         {% else %}
-            <p>No current rentals.</p>
+            <div class="alert alert-info mt-4 ">
+                <div>
+                    <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current flex-shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M12 19h.01M12 3v12"/>
+                    </svg>
+                    <span>No current rentals.</span>
+                </div>
+            </div>
         {% endif %}
     </section>
 
+    <!-- Rental History Section -->
     <section class="mt-8">
-        <h2 class="text-lg font-semibold">Rental History</h2>
+        <h2 class="text-lg font-semibold mb-4">Rental History</h2>
         {% if rental_history %}
-            <ul class="space-y-4">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                 {% for rental in rental_history %}
-                <li class="bg-white shadow-md rounded-lg p-4">
-                    <h3 class="text-lg font-semibold">{{ rental.equipment.name }}</h3>
-                    <p>Returned on: {{ rental.return_date }}</p>
-                    <p>Amount rented: {{ rental.amount }}</p>
-                </li>
+                <div class="card bg-gray-100 shadow-md rounded-lg overflow-hidden">
+                    <figure>
+                        <img src="{{ rental.equipment.picture.url }}" alt="{{ rental.equipment.name }}" class="w-full h-48 object-cover">
+                    </figure>
+                    <div class="card-body p-4">
+                        <h3 class="text-xl font-semibold">{{ rental.equipment.name }}</h3>
+                        <p class="text-gray-600 badge badge-outline font-semibold">Returned on: {{ rental.return_date }}</p>
+                        <p class="text-gray-600 badge badge-outline ">Amount rented: {{ rental.amount }}</p>
+                    </div>
+                </div>
                 {% endfor %}
-            </ul>
+            </div>
         {% else %}
-            <p>No rental history.</p>
+            <div class="alert alert-info mt-4">
+                <div>
+                    <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current flex-shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M12 19h.01M12 3v12"/>
+                    </svg>
+                    <span>No rental history.</span>
+                </div>
+            </div>
         {% endif %}
     </section>
 </div>

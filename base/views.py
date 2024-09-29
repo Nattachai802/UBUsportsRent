@@ -1,5 +1,5 @@
-from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView 
-from django.contrib.auth.views import LoginView , PasswordResetView
+from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView ,FormView
+from django.contrib.auth.views import LoginView , PasswordResetView , PasswordChangeView
 from django.shortcuts import render , redirect , get_object_or_404
 from django.views.generic import TemplateView
 from django.urls import reverse_lazy
@@ -7,6 +7,9 @@ from django.contrib import messages
 from django.contrib.messages.views import SuccessMessageMixin
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.auth import get_user_model
+from django.http import JsonResponse
+from django.contrib.auth.forms import PasswordChangeForm
+from django.contrib.auth import update_session_auth_hash
 from django.http import JsonResponse
 
 from base.models import *
@@ -116,6 +119,12 @@ class AccountView(LoginRequiredMixin,TemplateView):
 
         # Fetch rental history (items returned)
         context['rental_history'] = Booking.objects.filter(user=user, status='Returned')
+        
+        user_rentals = Booking.objects.filter(user=self.request.user)
+
+        total_rentals = user_rentals.filter(status='Returned').count()  
+        
+        context['total_rentals'] = total_rentals
 
         return context
 
@@ -157,3 +166,26 @@ def booking_events(request):
         })
 
     return JsonResponse(events, safe=False)
+
+
+
+class CustomPasswordChangeView(PasswordChangeView):
+    template_name = 'password_change_form.html'
+    success_url = reverse_lazy('base:password_change_done')
+
+    def form_valid(self, form):
+        messages.success(self.request, 'รหัสผ่านของคุณถูกเปลี่ยนเรียบร้อยแล้ว!')
+        return super().form_valid(form)
+    
+class UpdateUsernameView(LoginRequiredMixin, UpdateView):
+    model = CustomUser
+    template_name = 'update_username.html'
+    fields = ['username']  # อนุญาตให้แก้ไขแค่ชื่อผู้ใช้
+    success_url = reverse_lazy('base:account_dashboard')  # หรือหน้าอื่นที่คุณต้องการ
+
+    def form_valid(self, form):
+        messages.success(self.request, 'ชื่อผู้ใช้ของคุณถูกเปลี่ยนเรียบร้อยแล้ว!')
+        return super().form_valid(form)
+
+    def get_object(self):
+        return self.request.user  # เพื่อให้แน่ใจว่าผู้ใช้แก้ไขได้เฉพาะข้อมูลของตนเอง

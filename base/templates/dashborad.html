@@ -1,49 +1,129 @@
 {% extends "base.html" %}
 
 {% block main %}
+<nav class="navbar bg-purple-400 shadow-lg">
+    <div class="container mx-auto flex justify-between items-center px-6">
+        <!-- Logo -->
+        <div>
+            <a href="{% url 'base:home' %}" class="text-white font-bold text-3xl hover:text-primary-content transition duration-300">UBU Sports Rent</a>
+        </div>
+        <!-- Menu -->
+        <div>
+            <ul class="menu menu-horizontal p-0 text-lg px-1 ">
+                <li>
+                    <a href="{% url 'base:notification_list' %}" class=" text-white font-semibold  hover:bg-gray-700 transition duration-200 ">การแจ้งเตือน</a>
+                </li>
+                <li>
+                    <a href="{% url 'renting:equipment_list' %}" class= "text-white font-semibold hover:bg-gray-700 transition duration-200">ยืมอุปกรณ์</a>
+                </li>
+                <li>
+                    <a href="{% url 'renting:my_rentals' %}" class= "text-white font-semibold hover:bg-gray-700 transition duration-200">คืนอุปกรณ์</a>
+                </li>
+                
+                <li class = 'hover:bg-gray-700 transition duration-200 rounded-lg'>
+                    <a href="{% url 'base:account_dashboard' %}">
+                    <span class="text-white font-semibold ">Welcome <strong>{{ request.user.username }}</strong></span>
+                    </a>
+                </li>
+                
+                <li>
+                    {% if user.is_authenticated %}
+                        <a href="{% url 'base:logout' %}" class="bg-red-500 text-white font-semibold py-2 px-4 rounded-lg hover:bg-red-600 transition duration-300">Logout</a>
+                    {% else %}
+                        <a href="{% url 'base:Login' %}" class="bg-green-500 text-white font-semibold py-2 px-4 rounded-lg hover:bg-green-600 transition duration-300">Login</a>
+                    {% endif %}
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
 <div class="container mx-auto py-6 px-4 sm:px-6 lg:px-8">
     <h1 class="text-3xl font-bold mb-8 text-cyan-600">Account Dashboard</h1>
 
-    <section class="bg-white shadow rounded-lg p-6 mb-8">
+    <!-- User Information -->
+    <section class="bg-white shadow-lg rounded-lg p-6 mb-8">
         <h2 class="text-xl font-semibold text-cyan-500 mb-4">User Information</h2>
-        <div class="space-y-2">
-            <p><strong>Username:</strong> <span class="text-gray-700">{{ user.username }}</span></p>
-            <p><strong>Email:</strong> <span class="text-gray-700">{{ user.email }}</span></p>
+        <div class="space-y-4">
+            <div class="flex items-center space-x-4">
+                <span class="font-bold">Username:</span>
+                <span class="text-gray-700">{{ user.username }}</span>
+            </div>
+            <div class="flex items-center space-x-4">
+                <span class="font-bold">Email:</span>
+                <span class="text-gray-700">{{ user.email }}</span>
+            </div>
+            <div class="flex space-x-4 mt-4">
+                <!-- Update Username Button -->
+                <a href="{% url 'base:edit_username' %}" class="btn btn-info">Update Username</a>
+                <!-- Reset Password Button -->
+                <a href="{% url 'base:password_change' %}" class="btn btn-warning">Reset Password</a>
+            </div>
         </div>
     </section>
 
-    <section class="bg-white shadow rounded-lg p-6 mb-8">
+    <section class="bg-white shadow-lg rounded-lg p-6 mb-8">
+        <h2 class="text-xl font-semibold text-cyan-500 mb-4">Rental Summary</h2>
+        <div class="space-y-2">
+            <p><strong>Total Rentals:</strong> {{ total_rentals }}</p>
+            <p><strong>Currently Rented Items:</strong> {{ current_rentals|length }}</p>
+        </div>
+    </section>
+
+    <!-- Current Rentals -->
+    <section class="bg-white shadow-lg rounded-lg p-6 mb-8">
         <h2 class="text-xl font-semibold text-cyan-500 mb-4">Current Rentals</h2>
         {% if current_rentals %}
-            <ul class="space-y-2">
-                {% for rental in current_rentals %}
-                <li class="bg-cyan-100 p-4 rounded-md shadow">
-                    <p><strong>{{ rental.equipment.name }}</strong></p>
-                    <p class="text-sm text-gray-600">Due on: {{ rental.return_date }}</p>
-                    <p class="text-sm text-gray-600">Amount: {{ rental.amount }}</p>
-                </li>
-                {% endfor %}
-            </ul>
+            <div class="overflow-x-auto">
+                <table class="table w-full">
+                    <thead>
+                        <tr>
+                            <th>Equipment</th>
+                            <th>Due Date</th>
+                            <th>Amount</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for rental in current_rentals %}
+                        <tr>
+                            <td class="text-gray-800">{{ rental.equipment.name }}</td>
+                            <td class="text-gray-600">{{ rental.return_date }}</td>
+                            <td class="text-gray-600">{{ rental.amount }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
         {% else %}
             <p class="text-gray-500">No current rentals.</p>
         {% endif %}
     </section>
 
-    <section class="bg-white shadow rounded-lg p-6 mb-8">
+    <!-- Rental History -->
+    <section class="bg-white shadow-lg rounded-lg p-6 mb-8">
         <h2 class="text-xl font-semibold text-cyan-500 mb-4">Rental History</h2>
         {% if rental_history %}
-            <ul class="space-y-2">
-                {% for rental in rental_history %}
-                <li class="bg-gray-100 p-4 rounded-md shadow">
-                    <p><strong>{{ rental.equipment.name }}</strong></p>
-                    <p class="text-sm text-gray-600">Returned on: {{ rental.return_date }}</p>
-                </li>
-                {% endfor %}
-            </ul>
+            <div class="overflow-x-auto">
+                <table class="table w-full">
+                    <thead>
+                        <tr>
+                            <th>Equipment</th>
+                            <th>Returned On</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for rental in rental_history %}
+                        <tr>
+                            <td class="text-gray-800">{{ rental.equipment.name }}</td>
+                            <td class="text-gray-600">{{ rental.return_date }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
         {% else %}
             <p class="text-gray-500">No rental history.</p>
         {% endif %}
     </section>
 </div>
-
 {% endblock %}

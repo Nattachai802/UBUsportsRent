@@ -1,47 +1,109 @@
 {% extends "base.html" %}
 
 {% block main %}
-<h1 class="text-2xl font-bold mb-6">Approve or Reject Bookings</h1>
+<nav class="navbar bg-purple-400 shadow-lg">
+    <div class="container mx-auto flex justify-between items-center px-6">
+        <!-- Logo -->
+        <div>
+            <a href="{% url 'base:home' %}" class="text-white font-bold text-3xl hover:text-primary-content transition duration-300">UBU Sports Rent</a>
+        </div>
+        <!-- Menu -->
+        <div>
+            <ul class="menu menu-horizontal p-0 text-lg px-1">
+                <li>
+                    <a href="{% url 'base:notification_list' %}" class="text-white font-semibold hover:bg-gray-700 transition duration-200">การแจ้งเตือน</a>
+                </li>
+                <li>
+                    <a href="{% url 'renting:equipment_list' %}" class="text-white font-semibold hover:bg-gray-700 transition duration-200">ยืมอุปกรณ์</a>
+                </li>
+                <li>
+                    <a href="{% url 'renting:my_rentals' %}" class="text-white font-semibold hover:bg-gray-700 transition duration-200">คืนอุปกรณ์</a>
+                </li>
+                <li class="hover:bg-gray-700 transition duration-200 rounded-lg">
+                    <a href="{% url 'base:account_dashboard' %}">
+                        <span class="text-white font-semibold">Welcome <strong>{{ request.user.username }}</strong></span>
+                    </a>
+                </li>
+                <li>
+                    {% if user.is_authenticated %}
+                        <a href="{% url 'base:logout' %}" class="bg-red-500 text-white font-semibold py-2 px-4 rounded-lg hover:bg-red-600 transition duration-300">Logout</a>
+                    {% else %}
+                        <a href="{% url 'base:Login' %}" class="bg-green-500 text-white font-semibold py-2 px-4 rounded-lg hover:bg-green-600 transition duration-300">Login</a>
+                    {% endif %}
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
 
-<table class="table-auto w-full">
-    <thead>
-        <tr class="bg-gray-100">
-            <th class="px-4 py-2">#</th>
-            <th class="px-4 py-2">User</th>
-            <th class="px-4 py-2">Equipment</th>
-            <th class="px-4 py-2">Booking Date</th>
-            <th class="px-4 py-2">Return Date</th>
-            <th class="px-4 py-2">Status</th>
-            <th class="px-4 py-2">Actions</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for booking in bookings %}
-        <tr>
-            <td class="border px-4 py-2">{{ forloop.counter }}</td>
-            <td class="border px-4 py-2">{{ booking.user.username }}</td>
-            <td class="border px-4 py-2">{{ booking.equipment.name }}</td>
-            <td class="border px-4 py-2">{{ booking.booking_date }}</td>
-            <td class="border px-4 py-2">{{ booking.return_date }}</td>
-            <td class="border px-4 py-2">{{ booking.get_status_display }}</td>
-            <td class="border px-4 py-2">
-                {% if booking.status == 'Pending' %}
-                <form method="post" action="{% url 'base:booking_approval' %}" class="inline">
-                    {% csrf_token %}
-                    <input type="hidden" name="booking_id" value="{{ booking.id }}">
-                    <button type="submit" name="action" value="approve" class="bg-green-500 text-white px-4 py-2 rounded-lg shadow hover:bg-green-600 transition duration-300">
-                        Approve
-                    </button>
-                    <button type="submit" name="action" value="reject" class="bg-red-500 text-white px-4 py-2 rounded-lg shadow hover:bg-red-600 transition duration-300">
-                        Reject
-                    </button>
-                </form>
-                {% else %}
-                <p>{{ booking.get_status_display }}</p>
-                {% endif %}
-            </td>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
+<div x-data="{ isSuperUser: {{ request.user.is_superuser|yesno:'true,false' }} }">
+    <!-- Sidebar Menu (Visible only for superusers) -->
+    <div x-show="isSuperUser" class="bg-gray-800 text-white py-1 px-2 flex items-center space-x-4">
+        <div class="flex items-center space-x-2">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-hand-platter">
+                <path d="M12 3V2"/>
+                <path d="M5 10a7.1 7.1 0 0 1 14 0"/>
+                <path d="M4 10h16"/>
+                <path d="M2 14h12a2 2 0 1 1 0 4h-2"/>
+                <path d="m15.4 17.4 3.2-2.8a2 2 0 0 1 2.8 2.9l-3.6 3.3c-.7.8-1.7 1.2-2.8 1.2h-4c-1.1 0-2.1-.4-2.8-1.2L5 18"/>
+                <path d="M5 14v7H2"/>
+            </svg>
+            <span class="text-2xl font-extrabold">Admin Panel</span>
+        </div>
+        <nav class="flex space-x-6">
+            <a href="{% url 'Manageq:View' %}" class="py-2.5 px-4 rounded transition duration-200 hover:bg-gray-700 hover:text-white">Manage Equipment</a>
+            <a href="{% url 'base:user_list' %}" class="py-2.5 px-4 rounded transition duration-200 hover:bg-gray-700 hover:text-white">User Management</a>
+            <a href="{% url 'base:booking_approval'%}" class="py-2.5 px-4 rounded transition duration-200 hover:bg-gray-700 hover:text-white">Approve Booking</a>
+        </nav>
+    </div>
+</div>
+
+<!-- Approve/Reject Booking Table -->
+<div class="container mx-auto py-6">
+    <h1 class="text-3xl font-bold mb-8 text-center text-cyan-600">Approve or Reject Bookings</h1>
+
+    <div class="overflow-x-auto bg-white shadow-lg rounded-lg p-6">
+        <table class="min-w-full divide-y divide-gray-200">
+            <thead>
+                <tr class="bg-cyan-500 text-white">
+                    <th class="px-6 py-3 text-left text-sm font-semibold">#</th>
+                    <th class="px-6 py-3 text-left text-sm font-semibold">User</th>
+                    <th class="px-6 py-3 text-left text-sm font-semibold">Equipment</th>
+                    <th class="px-6 py-3 text-left text-sm font-semibold">Booking Date</th>
+                    <th class="px-6 py-3 text-left text-sm font-semibold">Return Date</th>
+                    <th class="px-6 py-3 text-left text-sm font-semibold">Status</th>
+                    <th class="px-6 py-3 text-center text-sm font-semibold">Actions</th>
+                </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200">
+                {% for booking in bookings %}
+                <tr class="hover:bg-gray-100">
+                    <td class="px-6 py-4">{{ forloop.counter }}</td>
+                    <td class="px-6 py-4">{{ booking.user.username }}</td>
+                    <td class="px-6 py-4">{{ booking.equipment.name }}</td>
+                    <td class="px-6 py-4">{{ booking.booking_date|date:"Y-m-d" }}</td>
+                    <td class="px-6 py-4">{{ booking.return_date|date:"Y-m-d" }}</td>
+                    <td class="px-6 py-4">{{ booking.get_status_display }}</td>
+                    <td class="px-6 py-4 text-center">
+                        {% if booking.status == 'Pending' %}
+                        <form method="post" action="{% url 'base:booking_approval' %}" class="inline-block">
+                            {% csrf_token %}
+                            <input type="hidden" name="booking_id" value="{{ booking.id }}">
+                            <button type="submit" name="action" value="approve" class="bg-green-500 text-white py-2 px-4 rounded-lg hover:bg-green-600 transition">
+                                Approve
+                            </button>
+                            <button type="submit" name="action" value="reject" class="bg-red-500 text-white py-2 px-4 rounded-lg hover:bg-red-600 transition ml-2">
+                                Reject
+                            </button>
+                        </form>
+                        {% else %}
+                        <p class="text-gray-600">{{ booking.get_status_display }}</p>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
 {% endblock %}

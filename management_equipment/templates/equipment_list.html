@@ -1,9 +1,77 @@
 {% extends "base.html" %}
 
 {% block main %}
+<nav class="navbar bg-purple-400 shadow-lg">
+    <div class="container mx-auto flex justify-between items-center px-6">
+        <!-- Logo -->
+        <div>
+            <a href="{% url 'base:home' %}" class="text-white font-bold text-3xl hover:text-primary-content transition duration-300">UBU Sports Rent</a>
+        </div>
+        <!-- Menu -->
+        <div>
+            <ul class="menu menu-horizontal p-0 text-lg px-1 ">
+                <li>
+                    <a href="{% url 'base:notification_list' %}" class="text-white font-semibold hover:bg-gray-700 transition duration-200">การแจ้งเตือน</a>
+                </li>
+                <li>
+                    <a href="{% url 'renting:equipment_list' %}" class="text-white font-semibold hover:bg-gray-700 transition duration-200">ยืมอุปกรณ์</a>
+                </li>
+                <li>
+                    <a href="{% url 'renting:my_rentals' %}" class="text-white font-semibold hover:bg-gray-700 transition duration-200">คืนอุปกรณ์</a>
+                </li>
+                <li class='hover:bg-gray-700 transition duration-200 rounded-lg'>
+                    <a href="{% url 'base:account_dashboard' %}">
+                        <span class="text-white font-semibold">Welcome <strong>{{ request.user.username }}</strong></span>
+                    </a>
+                </li>
+                <li>
+                    {% if user.is_authenticated %}
+                        <a href="{% url 'base:logout' %}" class="bg-red-500 text-white font-semibold py-2 px-4 rounded-lg hover:bg-red-600 transition duration-300">Logout</a>
+                    {% else %}
+                        <a href="{% url 'base:Login' %}" class="bg-green-500 text-white font-semibold py-2 px-4 rounded-lg hover:bg-green-600 transition duration-300">Login</a>
+                    {% endif %}
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<div x-data="{ isSuperUser: {{ request.user.is_superuser|yesno:'true,false' }} }">
+    <!-- Sidebar Menu (Visible only for superusers) -->
+    <div x-show="isSuperUser" class="bg-gray-800 text-white py-1 px-2 flex items-center space-x-4">
+        <div class="flex items-center space-x-2">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-hand-platter">
+                <path d="M12 3V2"/>
+                <path d="M5 10a7.1 7.1 0 0 1 14 0"/>
+                <path d="M4 10h16"/>
+                <path d="M2 14h12a2 2 0 1 1 0 4h-2"/>
+                <path d="m15.4 17.4 3.2-2.8a2 2 0 0 1 2.8 2.9l-3.6 3.3c-.7.8-1.7 1.2-2.8 1.2h-4c-1.1 0-2.1-.4-2.8-1.2L5 18"/>
+                <path d="M5 14v7H2"/>
+            </svg>
+            <span class="text-2xl font-extrabold">Admin Panel</span>
+        </div>
+        <nav class="flex space-x-6">
+            <a href="{% url 'Manageq:View' %}" class="py-2.5 px-4 rounded transition duration-200 hover:bg-gray-700 hover:text-white">Manage Equipment</a>
+            <a href="{% url 'base:user_list' %}" class="py-2.5 px-4 rounded transition duration-200 hover:bg-gray-700 hover:text-white">User Management</a>
+            <a href="{% url 'base:booking_approval'%}" class="py-2.5 px-4 rounded transition duration-200 hover:bg-gray-700 hover:text-white">Approve Booking</a>
+        </nav>
+    </div>
+</div>
+
 <div class="container mx-auto py-6">
     <h1 class="text-3xl font-bold text-center mb-8 text-cyan-600">Equipment List</h1>
 
+    <!-- Add New Equipment Button -->
+    <div class="flex justify-end mb-4">
+        <a href="{% url 'Manageq:equipment_create' %}" class="btn btn-success">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 inline-block mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+            </svg>
+            Add New Equipment
+        </a>
+    </div>
+
+    <!-- Equipment Table -->
     <div class="overflow-x-auto">
         <table class="min-w-full bg-white shadow-md rounded-lg">
             <thead>
@@ -25,15 +93,8 @@
                     <td class="px-6 py-4">{{ item.available_amount }}</td>
                     <td class="px-6 py-4">{{ item.created_at|date:"Y-m-d H:i" }}</td>
                     <td class="px-6 py-4 text-center">
-                        <a href="{% url 'Manageq:equipment_update' item.id %}" 
-                           class="bg-yellow-400 text-white py-1 px-3 rounded-lg hover:bg-yellow-500 transition">
-                           Update
-                        </a>
-                        <a href="{% url 'Manageq:equipment_delete' item.id %}" 
-                           class="bg-red-500 text-white py-1 px-3 rounded-lg hover:bg-red-600 transition ml-2" 
-                           onclick="return confirm('Are you sure you want to delete this equipment?');">
-                           Delete
-                        </a>
+                        <a href="{% url 'Manageq:equipment_update' item.id %}" class="bg-yellow-400 text-white py-1 px-3 rounded-lg hover:bg-yellow-500 transition">Update</a>
+                        <a href="{% url 'Manageq:equipment_delete' item.id %}" class="bg-red-500 text-white py-1 px-3 rounded-lg hover:bg-red-600 transition ml-2" onclick="return confirm('Are you sure you want to delete this equipment?');">Delete</a>
                     </td>
                 </tr>
                 {% empty %}

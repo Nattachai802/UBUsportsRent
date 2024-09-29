@@ -31,4 +31,10 @@ urlpatterns = [
     
     path('api/bookings/', booking_events, name='booking_events'),
 
+    path('password/change/', CustomPasswordChangeView.as_view(), name='password_change'),
+    path('account/edit-username/', UpdateUsernameView.as_view(), name='edit_username'),
+
+
+
+
 ]

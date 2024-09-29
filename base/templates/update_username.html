@@ -1,24 +1,24 @@
 {% extends 'base.html' %}
 
 {% block main %}
-<div class="container mx-auto py-6 px-4 sm:px-6 lg:px-8">
+<div class="container mx-auto py-8 px-4 sm:px-6 lg:px-8">
     <div class="bg-white shadow-lg rounded-lg p-8 max-w-lg mx-auto">
-        <h2 class="text-3xl font-bold text-cyan-600 mb-6 text-center">Edit User</h2>
-
-        <!-- Form สำหรับการแก้ไขผู้ใช้ -->
+        <h2 class="text-3xl font-bold text-cyan-600 mb-6 text-center">แก้ไขชื่อผู้ใช้</h2>
+        
+        <!-- Form แก้ไขชื่อผู้ใช้ -->
         <form method="post" class="space-y-6">
             {% csrf_token %}
+            <!-- ใช้ form.as_p สำหรับการแสดงฟอร์ม -->
             <div class="space-y-4">
-                <!-- ใช้การแสดงฟอร์มอย่างสวยงาม -->
                 {{ form.as_p }}
             </div>
             
             <!-- ปุ่ม Action -->
             <div class="flex justify-end space-x-4">
                 <button type="submit" class="bg-cyan-500 text-white font-semibold py-2 px-6 rounded-lg shadow-lg hover:bg-cyan-600 transition duration-300">
-                    Save
+                    บันทึกการเปลี่ยนแปลง
                 </button>
-                <a href="{% url 'base:user_list' %}" class="bg-gray-500 text-white font-semibold py-2 px-6 rounded-lg shadow-lg hover:bg-gray-600 transition duration-300">
+                <a href="{% url 'base:account_dashboard' %}" class="bg-gray-500 text-white font-semibold py-2 px-6 rounded-lg shadow-lg hover:bg-gray-600 transition duration-300">
                     Cancel
                 </a>
             </div>
