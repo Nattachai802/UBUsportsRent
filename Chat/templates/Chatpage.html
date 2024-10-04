@@ -1,0 +1,113 @@
+{% extends "base.html" %}
+
+{% block main %}
+<body class="bg-gray-100">
+    <!-- Room Selection -->
+    <ul>
+        {% for room in rooms %}
+            <li><a href="{% url 'chat_room' room.name %}">{{ room.name }}</a></li>
+        {% endfor %}
+    </ul>
+
+    <!-- Chat Room -->
+    <div class="max-w-md mx-auto mt-10 bg-white shadow-lg rounded-lg">
+        <!-- Chat Header -->
+        <div class="bg-green-600 text-white text-center py-4 rounded-t-lg">
+            <h1 class="text-xl font-bold">Chit-Chat (Room: {{ room_name }}) <i class="fas fa-comment"></i></h1>
+        </div>
+        <!-- User Info and Logout -->
+        <div class="flex justify-between items-center px-4 py-2 border-b">
+            {% if request.user.is_authenticated %}
+            <div class="text-green-600 font-bold">
+                {{ request.user|title }}
+            </div>
+            <div>
+                <a href="{% url 'Chat:chat_rooms' %}" class= "text-green-600 font-bold text-left">back</a>
+            </div>
+            <form method="POST" action="{% url 'base:logout' %}" style="display: inline;">
+                {% csrf_token %}
+                <button type="submit" class="text-green-600 hover:underline">
+                    <i class="fas fa-sign-out-alt"></i> Logout
+                </button>
+            </form>
+            {% endif %}
+        </div>
+        <!-- Chat Message Container -->
+        <div class="bg-gray-50 p-4 h-72 overflow-y-auto" id="id_chat_item_container">
+            <!-- Messages will be displayed here -->
+        </div>
+        <!-- Input Field -->
+        <div class="flex items-center border-t p-4">
+            <input type="text" id="id_message_send_input" placeholder="Type your message..."
+                class="flex-1 px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500">
+            <button type="submit" id="id_message_send_button"
+                class="ml-4 px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700">
+                <i class="fas fa-paper-plane"></i> Send
+            </button>
+        </div>
+    </div>
+
+    <!-- WebSocket and Chat Logic -->
+    <script>
+        const roomName = "{{ room_name|escapejs }}";  // ดึงชื่อห้องจากDjango ใช้ escapejsในการตรวจสอบว่าดึงมาถูกต้องไหม
+        const chatSocket = new WebSocket('ws://' + window.location.host + '/ws/chat/' + roomName + '/'); //สร้างการเชื่อมต่อกับWeb socket ผ่าน url
+    
+        chatSocket.onopen = function (e) {
+            console.log("WebSocket connection established."); //เมื่อเชื่อมต่อกับweb socketสำเร็จจะปรากฏข้อตวามนี้ขึ้นมา
+        };
+    
+        chatSocket.onclose = function (e) {
+            console.log("WebSocket connection closed."); //เมื่อเชื่อมต่อกับweb socket ไม่ สำเร็จจะปรากฏข้อตวามนี้ขึ้นมา
+        };
+    
+        document.querySelector("#id_message_send_input").focus(); //ฟิลด์อินพุตข้อความ #id_message_send_input ถูกโฟกัสโดยอัตโนมัติ
+    
+        document.querySelector("#id_message_send_input").onkeyup = function (e) { //ถูกเรียกเมื่อผู้ใช้กดปุ่มใด ๆ ในฟิลด์อินพุต จะทำการตรวจสอบว่าปุ่มที่กดคือปุ่ม Enter (key code 13) หากกด Enter จะเรียกคลิกปุ่ม "ส่ง" ซึ่งจะส่งข้อความ
+            if (e.keyCode === 13) {  // ส่งข้อความเมื่อกดปุ่ม 'Enter'
+                document.querySelector("#id_message_send_button").click();
+            }
+        };
+    
+        document.querySelector("#id_message_send_button").onclick = function (e) {
+            const messageInput = document.querySelector("#id_message_send_input").value.trim(); //ดึงข้อความจากฟิลด์อินพุต (#id_message_send_input) และลบช่องว่างข้างหน้าและหลังข้อความ
+            if (messageInput.length === 0) {
+                return;  // Don't send empty messages
+            }
+    
+            const currentTime = new Date(); //ดึงเวลาปัจจุบันโดยใช้ new Date() และแปลงเป็นรูปแบบเวลา 
+            const time = currentTime.toLocaleTimeString();
+    
+            chatSocket.send(JSON.stringify({ //ส่งข้อความไปที่เซิร์ฟเวอร์ผ่าน WebSocket โดยใช้ chatSocket.send() ข้อมูลจะถูกส่งในรูปแบบ JSON
+                message: messageInput,
+                username: "{{ request.user.username }}",
+                time: time
+            }));
+    
+            document.querySelector("#id_message_send_input").value = '';  // หลังจากส่งข้อความ ฟิลด์อินพุตจะถูกล้างเพื่อให้ผู้ใช้สามารถพิมพ์ข้อความใหม่ได้
+        };
+    
+        chatSocket.onmessage = function(e) {
+            const data = JSON.parse(e.data); // Parse JSON data
+            const messageContainer = document.querySelector('#id_chat_item_container');
+            const div = document.createElement('div'); // Create new div for the message
+        
+            // Apply DaisyUI classes for chat bubble, based on whether it's the current user or another user
+            if (data.username === '{{ request.user.username }}') {
+                div.className = 'chat chat-end'; // Aligns to the right for current user
+                div.innerHTML = `<div class="chat-bubble chat-bubble-primary"><strong>${data.username}:</strong> ${data.message}</div>`;
+            } else {
+                div.className = 'chat chat-start'; // Aligns to the left for other users
+                div.innerHTML = `<div class="chat-bubble chat-bubble-secondary"><strong>${data.username}:</strong> ${data.message}</div>`;
+            }
+        
+            // Append the message div to the chat container
+            messageContainer.appendChild(div);
+        
+            // Auto-scroll to the bottom of the chat container
+            messageContainer.scrollTop = messageContainer.scrollHeight;
+        };
+        
+    </script>
+    
+</body>
+{% endblock %}

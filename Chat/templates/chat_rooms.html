@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+{% block main %}
+<div class="flex flex-col items-center justify-center min-h-screen bg-gray-100">
+    <!-- Select Room Heading -->
+    <h2 class="text-3xl font-bold text-center my-4">Select a Room</h2>
+
+    <!-- Form to Create or Join Room -->
+    <form action="{% url 'Chat:chat_room' 'room.name' %}" method="get" class="max-w-lg w-full bg-white p-6 shadow-lg rounded-lg">
+        <div class="form-control mb-4">
+            <label for="room-name" class="label">
+                <span class="label-text">Enter Room Name:</span>
+                <span> 
+                    <a href={%url 'Chat:create_room'%} class='label-text text-right text-green-600'> Create room</a>
+
+                </span>
+            </label>
+            <input type="text" id="room-name" name="room_name" placeholder="Type room name"
+                   class="input input-bordered w-full"/>
+        </div>
+        <button type="submit" class="btn btn-primary w-full">Join</button>
+    </form>
+
+    <!-- Existing Rooms Heading -->
+    <h3 class="text-2xl font-semibold text-center my-6">Or select an existing room:</h3>
+
+    <!-- Room List -->
+    <ul class="menu bg-base-200 rounded-lg shadow-md max-w-lg w-full">
+        {% for room in rooms %}
+            <li class="my-2">
+                <a href="{% url 'Chat:chat_room' room.name %}" class="w-full">
+                    {{ room.name }}
+                </a>
+            </li>
+        {% endfor %}
+    </ul>
+</div>
+{% endblock %}

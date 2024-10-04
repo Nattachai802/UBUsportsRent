@@ -1,16 +1,26 @@
 {% extends "base.html" %}
 
 {% block main %}
-<div class="container mx-auto py-6">
-    <h1 class="text-2xl font-bold mb-6">Confirm Delete</h1>
-    <p>Are you sure you want to delete the equipment: <strong>{{ object.name }}</strong>?</p>
+<div class="container mx-auto py-6 px-4 sm:px-6 lg:px-8">
+    <div class="bg-white shadow-lg rounded-lg p-6">
+        <h1 class="text-3xl font-bold text-red-600 mb-6 text-center">Confirm Delete</h1>
+        
+        <p class="text-lg text-gray-700 text-center">Are you sure you want to delete the equipment:</p>
+        <p class="text-lg font-semibold text-gray-800 text-center my-4"><strong>{{ object.name }}</strong>?</p>
 
-    <form method="post">
-        {% csrf_token %}
-        <div class="mt-4 flex justify-between">
-            <a href="{% url 'Manageq:View' %}" class="bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600">Cancel</a>
-            <button type="submit" class="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600">Delete</button>
-        </div>
-    </form>
+        <form method="post" class="mt-6">
+            {% csrf_token %}
+            <div class="flex justify-center space-x-4">
+                <!-- Cancel Button -->
+                <a href="{% url 'Manageq:View' %}" class="btn btn-outline btn-gray-500 hover:bg-gray-600 hover:text-white px-6 py-3 rounded-lg transition duration-300">
+                    Cancel
+                </a>
+                <!-- Delete Button -->
+                <button type="submit" class="btn btn-error text-white px-6 py-3 rounded-lg hover:bg-red-600 transition duration-300">
+                    Delete
+                </button>
+            </div>
+        </form>
+    </div>
 </div>
 {% endblock %}

@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block main %}
+
+<div class="flex flex-col items-center justify-center min-h-screen bg-gray-100">
+    <!-- Heading for Create Room -->
+    <h2 class="text-3xl font-bold text-center my-4">Create a New Chat Room</h2>
+
+    <!-- Form to Create a Chat Room -->
+    <form method="POST" class="max-w-md w-full bg-white p-6 shadow-lg rounded-lg">
+        {% csrf_token %}
+
+        <div class="form-control mb-4">
+            <label for="room_name" class="label">
+                <span class="label-text font-semibold">Room Name:</span>
+            </label>
+            <input type="text" id="room_name" name="room_name" placeholder="Enter room name"
+                   class="input input-bordered w-full" required>
+        </div>
+
+        <button type="submit" class="btn btn-primary w-full mb-4">Create Room</button>
+    </form>
+
+    <!-- Button to Redirect to Chat Rooms Page -->
+    <a href="{% url 'Chat:chat_rooms' %}" class="btn btn-secondary mt-4">View All Chat Rooms</a>
+</div>
+
+{% endblock %}
+

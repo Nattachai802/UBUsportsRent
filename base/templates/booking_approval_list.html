@@ -19,6 +19,11 @@
                 <li>
                     <a href="{% url 'renting:my_rentals' %}" class="text-white font-semibold hover:bg-gray-700 transition duration-200">คืนอุปกรณ์</a>
                 </li>
+
+                <li>
+                    <a href="{% url 'Chat:chat_rooms' %}" class= "text-white font-semibold hover:bg-gray-700 transition duration-200">ติดต่อผู้ดูแล</a>
+                </li>
+                
                 <li class="hover:bg-gray-700 transition duration-200 rounded-lg">
                     <a href="{% url 'base:account_dashboard' %}">
                         <span class="text-white font-semibold">Welcome <strong>{{ request.user.username }}</strong></span>
@@ -26,9 +31,16 @@
                 </li>
                 <li>
                     {% if user.is_authenticated %}
-                        <a href="{% url 'base:logout' %}" class="bg-red-500 text-white font-semibold py-2 px-4 rounded-lg hover:bg-red-600 transition duration-300">Logout</a>
+                    <form method="POST" action="{% url 'base:logout' %}" style="display: inline;">
+                        {% csrf_token %}
+                        <button type="submit" class="bg-red-500 text-white font-semibold py-2 px-4 rounded-lg hover:bg-red-600 transition duration-300">
+                            Logout
+                        </button>
+                    </form>
                     {% else %}
-                        <a href="{% url 'base:Login' %}" class="bg-green-500 text-white font-semibold py-2 px-4 rounded-lg hover:bg-green-600 transition duration-300">Login</a>
+                    <a href="{% url 'base:Login' %}" class="bg-green-500 text-white font-semibold py-2 px-4 rounded-lg hover:bg-green-600 transition duration-300">
+                        Login
+                    </a>
                     {% endif %}
                 </li>
             </ul>

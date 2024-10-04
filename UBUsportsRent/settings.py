@@ -46,13 +46,16 @@ INSTALLED_APPS = [
     "django.contrib.contenttypes",
     "django.contrib.sessions",
     "django.contrib.messages",
+    'daphne',
     "django.contrib.staticfiles",
+    'Chat',
     'base',
     'management_equipment',
     'renting',
     'tailwind',
     'theme',
-    'django_browser_reload'
+    'django_browser_reload',
+    'channels',
 ]
 
 MIDDLEWARE = [
@@ -84,8 +87,13 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = "UBUsportsRent.wsgi.application"
+ASGI_APPLICATION = 'UBUsportsRent.asgi.application'
 
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels.layers.InMemoryChannelLayer"
+    }
+}
 
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
@@ -159,4 +167,3 @@ STATICFILES_DIRS = [
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
-
